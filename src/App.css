@@ -1,0 +1,40 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom styles */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f7f9fc;
+}
+
+.shadow-soft {
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+}
+
+input:focus, select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Transitions for view changes */
+.view-transition {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.view-transition-enter {
+  opacity: 0;
+}
+
+.view-transition-enter-active {
+  opacity: 1;
+}
+
+.view-transition-exit {
+  opacity: 1;
+}
+
+.view-transition-exit-active {
+  opacity: 0;
+}
