@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axiosInstance from '../axios/config';
 
 const UnifiedLogin = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -6,29 +7,32 @@ const UnifiedLogin = ({ onLoginSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-
-    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
-    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
-    const employeeEmail = import.meta.env.VITE_EMPLOYEE_EMAIL;
-    const employeePassword = import.meta.env.VITE_EMPLOYEE_PASSWORD;
-
-    setTimeout(() => {
-      if (email === adminEmail && password === adminPassword) {
-        console.log('Admin logged in successfully');
-        onLoginSuccess('admin');
-      } else if (email === employeeEmail && password === employeePassword) {
-        console.log('Employee logged in successfully');
-        onLoginSuccess('employee');
-      } else {
-        setError('Invalid email or password');
-        console.warn('Login failed: incorrect credentials');
-      }
+    
+    try {
+      // Replace with your actual API endpoint
+      const response = await axiosInstance.post('/login', {
+        email,
+        password
+      });
+      
+      // Assuming your backend returns a role property in the response data
+      const role  = response.data.user.role;
+      
+      console.log(`${role} logged in successfully`);
+      onLoginSuccess(role);
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(
+        err.response?.data?.message || 
+        'Login failed. Please check your credentials and try again.'
+      );
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   return (
@@ -90,7 +94,11 @@ const UnifiedLogin = ({ onLoginSuccess }) => {
               </label>
             </div>
             <div className="text-sm">
-              <button type="button" className="text-blue-600 hover:underline">
+              <button 
+                type="button" 
+                onClick={() => onLoginSuccess('forgotPassword')} 
+                className="text-blue-600 hover:underline"
+              >
                 Forgot password?
               </button>
             </div>
@@ -108,7 +116,11 @@ const UnifiedLogin = ({ onLoginSuccess }) => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Need an account?{' '}
-            <button type="button" className="text-blue-600 hover:underline">
+            <button 
+              type="button" 
+              onClick={() => onLoginSuccess('adminSignup')} 
+              className="text-blue-600 hover:underline"
+            >
               Register here
             </button>
           </p>

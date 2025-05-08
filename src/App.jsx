@@ -1,47 +1,72 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+
 import UnifiedLogin from './LoginPage/UnifiedLogin';
 import AdminDashboard from './Dashboard/Admin';
 import EmployeeDashboard from './Dashboard/Employee';
 import AdminSignup from './Sign Up/AdminSignup';
 import EmployeeSignup from './Sign Up/EmployeeSignup';
 import ForgotPassword from './Forgot Password/ForgotPassword';
+
 import './App.css';
 
-function App() {
-  const [currentView, setCurrentView] = useState('login');
-  const [userRole, setUserRole] = useState(null);
+const AppRoutes = () => {
+  const navigate = useNavigate();
+
+  const handleLoginSuccess = (result) => {
+    if (result === 'adminSignup') {
+      navigate('/company-registration');
+    } else if (result === 'employeeSignup') {
+      navigate('/employee-signup');
+    } else if (result === 'forgotPassword') {
+      navigate('/forgot-password');
+    } else if (result === 'admin') {
+      navigate('/admin-dashboard');
+    } else if (result === 'employee') {
+      navigate('/employee-dashboard');
+    } else {
+      navigate('/');
+    }
+  };
 
   const switchView = (view) => {
-    setCurrentView(view);
-  };
-
-  const handleLoginSuccess = (role) => {
-    setUserRole(role);
-    setCurrentView(`${role}Dashboard`);
-  };
-
-  const renderView = () => {
-    switch (currentView) {
-      case 'login':
-        return <UnifiedLogin onLoginSuccess={handleLoginSuccess} />;
+    switch (view) {
+      case 'dashboard':
+        navigate('/');
+        break;
       case 'adminSignup':
-        return <AdminSignup switchView={switchView} />;
+        navigate('/company-registration');
+        break;
       case 'employeeSignup':
-        return <EmployeeSignup switchView={switchView} />;
+        navigate('/employee-signup');
+        break;
       case 'forgotPassword':
-        return <ForgotPassword switchView={switchView} />;
-      case 'adminDashboard':
-        return <AdminDashboard />;
-      case 'employeeDashboard':
-        return <EmployeeDashboard />;
+        navigate('/forgot-password');
+        break;
       default:
-        return <UnifiedLogin onLoginSuccess={handleLoginSuccess} />;
+        navigate('/');
     }
   };
 
   return (
+    <Routes>
+      <Route path="/" element={<UnifiedLogin onLoginSuccess={handleLoginSuccess} />} />
+      <Route path="/company-registration" element={<AdminSignup switchView={switchView} />} />
+      <Route path="/employee-signup" element={<EmployeeSignup switchView={switchView} />} />
+      <Route path="/forgot-password" element={<ForgotPassword switchView={switchView} />} />
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
+function App() {
+  return (
     <div className="min-h-screen w-full bg-gray-50">
-      {renderView()}
+      <Router>
+        <AppRoutes />
+      </Router>
     </div>
   );
 }
