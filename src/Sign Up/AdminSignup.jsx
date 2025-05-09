@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axiosInstance from '../axios/config';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const AdminSignup = ({ switchView }) => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ const AdminSignup = ({ switchView }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -71,7 +73,10 @@ const AdminSignup = ({ switchView }) => {
         confirm_password: '',
         admin_code: ''
       });
-      
+
+      // Redirect to login page after successful registration
+      navigate('/login'); // Redirect to the login page
+
     } catch (err) {
       console.error('Error saving company info:', err);
       setError(

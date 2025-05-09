@@ -16,6 +16,9 @@ const AdminDashboard = () => {
 
 
   const first_name = useSelector((state) => state.auth.first_name);
+  const capitalizedFirstName =
+  first_name.charAt(0).toUpperCase() + first_name.slice(1);
+
   const email = useSelector((state) => state.auth.email);
   const company_id = useSelector((state) => state.auth.company_id);
   // console.log(company_id)
@@ -266,7 +269,8 @@ const AdminDashboard = () => {
                   <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center">
                     <User className="w-4 h-4" />
                   </div>
-                  <span className="ml-2 text-sm font-medium">{first_name}</span>
+                  <div className="text-sm font-medium">{capitalizedFirstName}</div>
+
                   <ChevronDown className="w-4 h-4 ml-1 text-gray-500" />
                 </div>
 
