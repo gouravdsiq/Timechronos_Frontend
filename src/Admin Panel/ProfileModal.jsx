@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Camera, Edit, ArrowLeft } from 'lucide-react';
+import { Camera, Edit, ArrowLeft, CloudCog } from 'lucide-react';
 import axiosInstance from '../axios/config';
+import { useSelector } from 'react-redux';
 
 const ProfileModal = () => {
-  const { companyId } = useParams();
+
+  const token = localStorage.getItem('access_token');
+  const company_id = useSelector((state) => state.auth.company_id);
   const navigate = useNavigate();
 
+  console.log(company_id);
   const [isEditing, setIsEditing] = useState({
     name: false,
     emailDomain: false,
@@ -22,17 +26,15 @@ const ProfileModal = () => {
     contactNumber: '',
     address: '',
   });
-
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        // console.log(token); // Retrieve the access token
-        const response = await axiosInstance.get(`/admin`, {
+        const response = await axiosInstance.get(`/admin`, { // Include companyId in the URL
           headers: {
             Authorization: `Bearer ${token}`, // Include the access token in the Authorization header
           },
         });
+        
         const companyData = response.data.company;
         setFormData({
           name: companyData.name || '',
@@ -41,9 +43,7 @@ const ProfileModal = () => {
           contactNumber: companyData.contact_number || '',
           address: companyData.address || '',
         });
-        // console.log(companyData.name);
       } catch (error) {
-        
         if (error.response) {
           console.error('Error fetching company data:', error.response.data);
           console.error('Status code:', error.response.status);
@@ -52,11 +52,9 @@ const ProfileModal = () => {
         }
       }
     };
-  
+
     fetchCompanyData();
-  }, [companyId]);
-  
-  
+  }, [company_id]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -82,7 +80,7 @@ const ProfileModal = () => {
   const handleSaveAll = async () => {
     try {
       const token = localStorage.getItem('access_token'); // Retrieve the access token
-      await axiosInstance.put(`/admin`, {
+      await axiosInstance.put(`/update-profile/${company_id}`, { // Include companyId in the URL
         name: formData.name,
         email_domain: formData.emailDomain,
         contact_email: formData.contactEmail,

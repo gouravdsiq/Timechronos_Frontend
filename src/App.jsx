@@ -8,6 +8,8 @@ import AdminSignup from './Sign Up/AdminSignup';
 import EmployeeSignup from './Sign Up/EmployeeSignup';
 import ForgotPassword from './Forgot Password/ForgotPassword';
 import ProfileModal from './Admin Panel/ProfileModal';
+import EmployeeList from '../src/Admin Panel/EmployeeList'
+import ActiveProjects from './Admin Panel/ActiveModal';
 
 import './App.css';
 
@@ -56,6 +58,8 @@ const AppRoutes = () => {
       <Route path="/employee-signup" element={<EmployeeSignup switchView={switchView} />} />
       <Route path="/forgot-password" element={<ForgotPassword switchView={switchView} />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/admin-dashboard/employee-list" element={< EmployeeList/>} />
+      <Route path="/admin-dashboard/active-projects" element={<ActiveProjects />} />
       <Route path="/admin-dashboard/update-profile/:companyId" element={<ProfileModal />} />
       <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
       <Route path="*" element={<Navigate to="/" replace />} />

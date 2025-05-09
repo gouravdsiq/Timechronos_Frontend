@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Clock, FileText, Users, Briefcase, BarChart2, PieChart, Settings, ChevronDown, Bell, User, LogOut, Menu, ChevronLeft } from 'lucide-react';
 import RecentActivityModal from '../Admin Panel/RecentActivityModal';
 import ProfileModal from '../Admin Panel/ProfileModal'; // Import ProfileModal
+import { useSelector } from 'react-redux';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -14,8 +15,16 @@ const AdminDashboard = () => {
   const [showProfileModal, setShowProfileModal] = useState(false); // State for ProfileModal
 
 
-  // Sample company ID - in a real app, this would come from auth context/state
-  const companyId = '123';
+  const first_name = useSelector((state) => state.auth.first_name);
+  const email = useSelector((state) => state.auth.email);
+  const company_id = useSelector((state) => state.auth.company_id);
+  // console.log(company_id)
+  // console.log(email);
+  
+  const firstLetter = first_name ? first_name.charAt(0).toUpperCase() : '';
+
+  // // Sample company ID - in a real app, this would come from auth context/state
+  // const companyId = '123';
 
   // Date picker states
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -113,8 +122,13 @@ const AdminDashboard = () => {
     navigate('/admin-dashboard/employee-list');
   };
 
+  const handleViewAllActiveProjects = () => {
+    navigate('/admin-dashboard/active-projects');
+  };
+
   const navigateToProfile = () => {
-    navigate(`/admin-dashboard/update-profile/${companyId}`);
+    const companyid = localStorage.getItem('company_id');
+    navigate(`/admin-dashboard/update-profile/${company_id}`);
     setShowUserMenu(false);
   };
 
@@ -194,11 +208,11 @@ const AdminDashboard = () => {
         {!sidebarCollapsed && (
           <div className="p-4 border-t border-indigo-700 flex items-center mt-auto">
             <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center">
-              <span className="font-semibold">A</span>
+              <span className="font-semibold">{firstLetter}</span>
             </div>
             <div className="ml-3">
-              <div className="text-sm font-medium">Admin</div>
-              <div className="text-xs text-indigo-300">admin@timechronos.com</div>
+            <div className="text-sm font-medium">{first_name}</div>
+              <div className="text-xs text-indigo-300">{email}</div>
             </div>
           </div>
         )}
@@ -252,7 +266,7 @@ const AdminDashboard = () => {
                   <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center">
                     <User className="w-4 h-4" />
                   </div>
-                  <span className="ml-2 text-sm font-medium">Admin</span>
+                  <span className="ml-2 text-sm font-medium">{first_name}</span>
                   <ChevronDown className="w-4 h-4 ml-1 text-gray-500" />
                 </div>
 
@@ -345,7 +359,9 @@ const AdminDashboard = () => {
               </div>
 
               <div className="mt-auto flex justify-end pt-4">
-                <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                onClick={handleViewAllActiveProjects}
+                >
                   View All
                 </button>
               </div>

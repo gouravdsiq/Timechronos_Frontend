@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import axiosInstance from '../axios/config';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCredentials } from '../redux/authSlice'; // Adjust the path as needed
+
 
 const UnifiedLogin = ({ onLoginSuccess }) => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+ 
+      
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,16 +19,25 @@ const UnifiedLogin = ({ onLoginSuccess }) => {
     setError('');
     
     try {
-      // Replace with your actual API endpoint
       const response = await axiosInstance.post("/login", {
         email,
         password
       });
       
-      const { access_token, company_id, message } = response.data;
-      localStorage.setItem('access_token', access_token);
-      console.log(access_token);
-      console.log(`${message}: ${company_id} logged in successfully`);
+      console.log(response);
+      dispatch(setCredentials({
+        access_token: response.data.access_token,
+        company_id: response.data.user.company_id,
+        first_name: response.data.user.first_name,
+        role: response.data.user.role,
+        email: response.data.user.email
+      }));      
+      // console.log(company_id);
+      // console.log(response.data.user.email)
+      // console.log(response.data.user.role)
+      // console.log(response.data);
+      // console.log(`${message}: ${company_id} logged in successfully`);
+      
       onLoginSuccess(response.data.user.role); // Assuming user role is in response
     } catch (err) {
       console.error('Login error:', err);
