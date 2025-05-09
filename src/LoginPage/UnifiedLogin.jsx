@@ -14,16 +14,16 @@ const UnifiedLogin = ({ onLoginSuccess }) => {
     
     try {
       // Replace with your actual API endpoint
-      const response = await axiosInstance.post('/login', {
+      const response = await axiosInstance.post("/login", {
         email,
         password
       });
       
-      // Assuming your backend returns a role property in the response data
-      const role  = response.data.user.role;
-      
-      console.log(`${role} logged in successfully`);
-      onLoginSuccess(role);
+      const { access_token, company_id, message } = response.data;
+      localStorage.setItem('access_token', access_token);
+      console.log(access_token);
+      console.log(`${message}: ${company_id} logged in successfully`);
+      onLoginSuccess(response.data.user.role); // Assuming user role is in response
     } catch (err) {
       console.error('Login error:', err);
       setError(

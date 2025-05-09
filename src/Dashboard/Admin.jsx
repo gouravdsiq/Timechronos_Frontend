@@ -1,25 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock, FileText, Users, Activity, Calendar, Settings, ChevronDown, Bell, PieChart, User, LogOut, BarChart2, Briefcase, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Clock, FileText, Users, Briefcase, BarChart2, PieChart, Settings, ChevronDown, Bell, User, LogOut, Menu, ChevronLeft } from 'lucide-react';
 import RecentActivityModal from '../Admin Panel/RecentActivityModal';
+import ProfileModal from '../Admin Panel/ProfileModal'; // Import ProfileModal
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [currentDate] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [activeSection, setActiveSection] = useState('Dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false); // State for ProfileModal
+
+
+  // Sample company ID - in a real app, this would come from auth context/state
+  const companyId = '123';
 
   // Date picker states
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
-  const [selectedDateRange, setSelectedDateRange] = useState('Last 7 days');
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [timezone, setTimezone] = useState('UTC');
-  const [selectedDates, setSelectedDates] = useState([]);
-
-  const datePickerRef = useRef(null);
 
   // Modal state for RecentActivityModal
   const [showRecentActivityModal, setShowRecentActivityModal] = useState(false);
@@ -32,14 +33,6 @@ const AdminDashboard = () => {
     avgHoursWorked: 7.5,
     pendingRequests: 7
   };
-
-  // Sample employees data
-  const employees = [
-    { id: 1, name: 'John Doe', email: 'johndoe@example.com', position: 'Web Developer', status: 'Active' },
-    { id: 2, name: 'Jane Smith', email: 'janesmith@example.com', position: 'UX Designer', status: 'Inactive' },
-    { id: 3, name: 'Michael Brown', email: 'michaelbrown@example.com', position: 'Project Manager', status: 'Active' },
-    { id: 4, name: 'Emily Clark', email: 'emilyclark@example.com', position: 'Software Engineer', status: 'Active' }
-  ];
 
   // Sample employee activity data
   const recentActivity = [
@@ -55,10 +48,14 @@ const AdminDashboard = () => {
     return date.toLocaleDateString('en-US', options);
   };
 
-  // Format date for date picker
-  const formatShortDate = (date) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
+  // Format time (HH:MM:SS)
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
   };
 
   // Update clock
@@ -69,16 +66,6 @@ const AdminDashboard = () => {
 
     return () => clearInterval(timer);
   }, []);
-
-  // Format time (HH:MM:SS)
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true
-    });
-  };
 
   // Handle logout
   const handleLogout = () => {
@@ -96,123 +83,6 @@ const AdminDashboard = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  // Toggle date picker
-  const toggleDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
-
-  // Handle date range selection
-  const handleDateRangeChange = (range) => {
-    setSelectedDateRange(range);
-    // Logic to set start and end dates based on range
-    const today = new Date();
-    let start = new Date();
-
-    switch(range) {
-      case 'Last 7 days':
-        start.setDate(today.getDate() - 7);
-        break;
-      case 'Last 30 days':
-        start.setDate(today.getDate() - 30);
-        break;
-      case 'This month':
-        start = new Date(today.getFullYear(), today.getMonth(), 1);
-        break;
-      case 'Last month':
-        start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-        setEndDate(endOfLastMonth);
-        break;
-      default:
-        start.setDate(today.getDate() - 7);
-    }
-
-    if (range !== 'Last month') {
-      setEndDate(today);
-    }
-    setStartDate(start);
-  };
-
-  // Generate calendar days
-  const getDaysInMonth = (year, month) => {
-    const date = new Date(year, month, 1);
-    const days = [];
-    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-
-    // Add empty slots for days before first of month
-    for (let i = 0; i < firstDay; i++) {
-      if (i === 0) { // If first day is Sunday
-        break;
-      }
-      days.push({ day: null, date: null });
-    }
-
-    // Add days of the month
-    while (date.getMonth() === month) {
-      const dayObj = {
-        day: date.getDate(),
-        date: new Date(date),
-        isToday: date.toDateString() === new Date().toDateString(),
-        isSelected: selectedDates.some(d => d.toDateString() === date.toDateString())
-      };
-      days.push(dayObj);
-      date.setDate(date.getDate() + 1);
-    }
-
-    return days;
-  };
-
-  const handleDateClick = (date) => {
-    if (!date) return;
-
-    // Toggle date selection
-    const dateExists = selectedDates.find(d => d.toDateString() === date.toDateString());
-
-    if (dateExists) {
-      setSelectedDates(selectedDates.filter(d => d.toDateString() !== date.toDateString()));
-    } else {
-      setSelectedDates([...selectedDates, date]);
-    }
-  };
-
-  const handleMonthChange = (direction) => {
-    let newMonth = selectedMonth;
-    let newYear = selectedYear;
-
-    if (direction === 'next') {
-      newMonth++;
-      if (newMonth > 11) {
-        newMonth = 0;
-        newYear++;
-      }
-    } else {
-      newMonth--;
-      if (newMonth < 0) {
-        newMonth = 11;
-        newYear--;
-      }
-    }
-
-    setSelectedMonth(newMonth);
-    setSelectedYear(newYear);
-  };
-
-  const getMonthName = (month) => {
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return months[month];
-  };
-
-  // Apply date filters
-  const handleApplyDates = () => {
-    if (selectedDates.length > 0) {
-      // Sort dates
-      const sortedDates = [...selectedDates].sort((a, b) => a - b);
-      setStartDate(sortedDates[0]);
-      setEndDate(sortedDates[sortedDates.length - 1]);
-    }
-    setShowDatePicker(false);
-  };
-
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -220,19 +90,14 @@ const AdminDashboard = () => {
         setShowUserMenu(false);
       }
 
-      if (showDatePicker && datePickerRef.current && !datePickerRef.current.contains(event.target)) {
-        setShowDatePicker(false);
-      }
+      // no datePickerRef defined or used, so removed related condition to avoid errors
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showUserMenu, showDatePicker]);
-
-  // Calculate calendar days
-  const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
+  }, [showUserMenu]);
 
   // Functions to open/close the Recent Activity modal
   const openRecentActivityModal = () => {
@@ -241,6 +106,16 @@ const AdminDashboard = () => {
 
   const closeRecentActivityModal = () => {
     setShowRecentActivityModal(false);
+  };
+
+  // Navigate to employee list on "View All" click in Employees card
+  const handleViewAllEmployees = () => {
+    navigate('/admin-dashboard/employee-list');
+  };
+
+  const navigateToProfile = () => {
+    navigate(`/admin-dashboard/update-profile/${companyId}`);
+    setShowUserMenu(false);
   };
 
   return (
@@ -338,6 +213,7 @@ const AdminDashboard = () => {
               <button 
                 onClick={toggleSidebar}
                 className="mr-4 p-1 rounded-md hover:bg-gray-100 transition-colors"
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
                 {sidebarCollapsed ? <Menu className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}  
               </button>
@@ -350,21 +226,28 @@ const AdminDashboard = () => {
 
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <button className="p-1 rounded-full hover:bg-gray-100 relative">
+                <button className="p-1 rounded-full hover:bg-gray-100 relative" aria-label="Notifications">
                   <Bell className="w-5 h-5 text-gray-600" />
                   <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
                 </button>
               </div>
 
               <div className="border-l border-gray-300 h-6"></div>
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                      <Settings className="w-4 h-4 mr-2" /></a>
-                      <div className="border-l border-gray-300 h-6"></div>
+              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" aria-label="Settings">
+                <Settings className="w-4 h-4 mr-2" />
+              </a>
+              <div className="border-l border-gray-300 h-6"></div>
+
               {/* User profile with dropdown */}
               <div className="relative user-menu-container">
                 <div 
                   className="flex items-center cursor-pointer" 
                   onClick={toggleUserMenu}
+                  tabIndex={0}
+                  role="button"
+                  aria-haspopup="true"
+                  aria-expanded={showUserMenu}
+                  aria-label="User menu"
                 >
                   <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center">
                     <User className="w-4 h-4" />
@@ -375,16 +258,26 @@ const AdminDashboard = () => {
 
                 {/* Dropdown Menu */}
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border border-gray-200">
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                  <div 
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border border-gray-200"
+                    role="menu"
+                    aria-orientation="vertical"
+                    aria-label="User menu"
+                  >
+                     <button 
+                      onClick={navigateToProfile}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center cursor-pointer"
+                      role="menuitem"
+                    >
                       <User className="w-4 h-4 mr-2" />
                       Profile
-                    </a>
+                    </button>
 
                     <div className="border-t border-gray-100 my-1"></div>
                     <button 
                       onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+                      role="menuitem"
                     >
                       <LogOut className="w-4 h-4 mr-2" />
                       Logout
@@ -394,217 +287,70 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
-
-          <div className="border-b border-gray-200 px-6 py-2">
-            <div className="relative">
-              <div className="flex items-center justify-between">
-
-                <button 
-                  onClick={toggleDatePicker}
-                  className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm flex items-center space-x-2 hover:bg-gray-50"
-                >
-                  <Calendar className="w-4 h-4 text-gray-500" />
-                  <span>{formatShortDate(startDate)} - {formatShortDate(endDate)}</span>
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
-                </button>
-              </div>
-
-              {/* Date Picker Dropdown */}
-              {showDatePicker && (
-                <div 
-                  ref={datePickerRef}
-                  className="absolute right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-30 w-full max-w-3xl"
-                >
-                  <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                    {/* Calendar */}
-                    <div className="w-full md:w-1/2">
-                      <div className="flex items-center justify-between mb-4">
-                        <button 
-                          onClick={() => handleMonthChange('prev')}
-                          className="p-1 rounded-full hover:bg-gray-100"
-                        >
-                          <ChevronLeft className="w-5 h-5 text-gray-600" />
-                        </button>
-                        <h3 className="text-lg font-medium">{getMonthName(selectedMonth)} {selectedYear}</h3>
-                        <button 
-                          onClick={() => handleMonthChange('next')}
-                          className="p-1 rounded-full hover:bg-gray-100"
-                        >
-                          <ChevronRight className="w-5 h-5 text-gray-600" />
-                        </button>
-                      </div>
-
-                      <div className="grid grid-cols-7 gap-1">
-                        {/* Days of week */}
-                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
-                          <div key={index} className="text-center text-sm text-gray-500 py-2">
-                            {day}
-                          </div>
-                        ))}
-
-                        {/* Calendar days */}
-                        {daysInMonth.map((dayObj, index) => (
-                          <div 
-                            key={index} 
-                            className={`
-                              text-center py-2 text-sm rounded-md cursor-pointer
-                              ${!dayObj.day ? 'invisible' : ''}
-                              ${dayObj.isToday ? 'bg-indigo-100 text-indigo-700' : ''}
-                              ${dayObj.isSelected ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100'}
-                            `}
-                            onClick={() => handleDateClick(dayObj.date)}
-                          >
-                            {dayObj.day}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Right side controls */}
-                    <div className="w-full md:w-1/2">
-                      <div className="mb-6">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Current period</h4>
-                        <div className="relative">
-                          <select 
-                            className="w-full p-3 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            value={selectedDateRange}
-                            onChange={(e) => handleDateRangeChange(e.target.value)}
-                          >
-                            <option value="Last 7 days">Last 7 days</option>
-                            <option value="Last 30 days">Last 30 days</option>
-                            <option value="This month">This month</option>
-                            <option value="Last month">Last month</option>
-                            <option value="Custom date">Custom date</option>
-                          </select>
-                          <ChevronDown className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                          <input
-                            type="text"
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            value={formatShortDate(startDate)}
-                            readOnly
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                          <input
-                            type="text"
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            value={formatShortDate(endDate)}
-                            readOnly
-                          />
-                        </div>
-                      </div>
-
-                      <div className="mb-6">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Timezone</h4>
-                        <div className="relative">
-                          <select
-                            className="w-full p-3 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            value={timezone}
-                            onChange={(e) => setTimezone(e.target.value)}
-                          >
-                            <option value="UTC">UTC</option>
-                            <option value="GMT">GMT</option>
-                            <option value="EST">EST</option>
-                            <option value="PST">PST</option>
-                          </select>
-                          <ChevronDown className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
-                        </div>
-                      </div>
-
-                      <p className="text-sm text-gray-600 mb-6">
-                        If you wish to save this view as a report, select a relative range date instead of a custom one.
-                      </p>
-
-                      <div className="flex justify-end space-x-3">
-                        <button
-                          onClick={() => setShowDatePicker(false)}
-                          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={handleApplyDates}
-                          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                        >
-                          Apply
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </header>
 
         {/* Dashboard Content */}
         <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
-  <div className="flex items-center justify-between mb-2">
-    <div>
-      <div className="text-sm font-medium text-gray-500 mb-1">Employees</div>
-    </div>
-    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-      <Users className="w-6 h-6 text-blue-600" />
-    </div>
-  </div>
+            <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <div className="text-sm font-medium text-gray-500 mb-1">Employees</div>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+              </div>
 
-  <div className="flex items-center space-x-6">
-    <div>
-      <div className="text-sm text-gray-500">Total</div>
-      <div className="text-2xl font-bold text-gray-800">{stats.totalEmployees}</div>
-      <div className="w-full h-2 bg-gray-100 rounded-full mt-2 overflow-hidden">
-        <div className="h-full bg-blue-500 rounded-full" style={{ width: '100%' }}></div>
-      </div>
-    </div>
-    <div>
-      <div className="text-sm text-gray-500">Active</div>
-      <div className="text-2xl font-bold text-gray-800">{stats.activeEmployees}</div>
-      <div className="w-full h-2 bg-gray-100 rounded-full mt-2 overflow-hidden">
-        <div
-          className="h-full bg-green-500 rounded-full"
-          style={{ width: `${(stats.activeEmployees / stats.totalEmployees) * 100}%` }}
-        ></div>
-      </div>
-    </div>
-  </div>
+              <div className="flex items-center space-x-6">
+                <div>
+                  <div className="text-sm text-gray-500">Total</div>
+                  <div className="text-2xl font-bold text-gray-800">{stats.totalEmployees}</div>
+                  <div className="w-full h-2 bg-gray-100 rounded-full mt-2 overflow-hidden">
+                    <div className="h-full bg-blue-500 rounded-full" style={{ width: '100%' }}></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-500">Active</div>
+                  <div className="text-2xl font-bold text-gray-800">{stats.activeEmployees}</div>
+                  <div className="w-full h-2 bg-gray-100 rounded-full mt-2 overflow-hidden">
+                    <div
+                      className="h-full bg-green-500 rounded-full"
+                      style={{ width: `${(stats.activeEmployees / stats.totalEmployees) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
 
-  <div className="mt-auto flex justify-end pt-4">
-    <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200">
-      View All
-    </button>
-  </div>
-</div>
+              <div className="mt-auto flex justify-end pt-4">
+                <button 
+                  className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                  onClick={handleViewAllEmployees}
+                >
+                  View All
+                </button>
+              </div>
+            </div>
 
-            
-<div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
-  <div className="flex items-center justify-between">
-    <div>
-      <div className="text-sm font-medium text-gray-500 mb-1">Active Projects</div>
-      <div className="text-2xl font-bold text-gray-800">{stats.activeProjects}</div>
-    </div>
-    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-      <Briefcase className="w-6 h-6 text-green-600" />
-    </div>
-  </div>
+            <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-gray-500 mb-1">Active Projects</div>
+                  <div className="text-2xl font-bold text-gray-800">{stats.activeProjects}</div>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                  <Briefcase className="w-6 h-6 text-green-600" />
+                </div>
+              </div>
 
-  <div className="mt-auto flex justify-end pt-4">
-    <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200">
-      View All
-    </button>
-  </div>
-</div>
+              <div className="mt-auto flex justify-end pt-4">
+                <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                  View All
+                </button>
+              </div>
+            </div>
 
-            
             <div className="bg-white rounded-lg shadow-sm p-5">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -616,25 +362,24 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
-  <div className="flex items-center justify-between">
-    <div>
-      <div className="text-sm font-medium text-gray-500 mb-1">Pending Requests</div>
-      <div className="text-2xl font-bold text-gray-800">{stats.pendingRequests}</div>
-    </div>
-    <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-      <FileText className="w-6 h-6 text-amber-600" />
-    </div>
-  </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-gray-500 mb-1">Pending Requests</div>
+                  <div className="text-2xl font-bold text-gray-800">{stats.pendingRequests}</div>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-amber-600" />
+                </div>
+              </div>
 
-  <div className="mt-auto flex justify-end pt-4">
-    <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200">
-      View All
-    </button>
-  </div>
-</div>
-
+              <div className="mt-auto flex justify-end pt-4">
+                <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                  View All
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Time Stats */}
@@ -678,15 +423,7 @@ const AdminDashboard = () => {
             </div>
 
             <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col">
-              <div className="flex items-center justify-between mb-4">
-                {/* <h3 className="text-gray-700 font-medium">Current Time</h3> */}
-              </div>
-              {/* <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-gray-800">{formatTime(currentTime)}</div>
-                  <div className="text-sm text-gray-500 mt-1">{timezone}</div>
-                </div>
-              </div> */}
+              {/* Intentionally left empty for future widget */}
             </div>
           </div>
 
@@ -753,9 +490,24 @@ const AdminDashboard = () => {
             onClose={closeRecentActivityModal} 
           />
         )}
+
+        {/* Profile Modal */}
+        {showProfileModal && (
+          <ProfileModal
+            isOpen={showProfileModal}
+            onClose={closeProfileModal}
+            userData={userData}
+            onSave={(updatedData) => {
+              console.log('Updated user data:', updatedData);
+              // Handle saving updatedData here if needed
+              closeProfileModal();
+            }}
+          />
+        )}
       </div>
     </div>
   );
 };
 
 export default AdminDashboard;
+

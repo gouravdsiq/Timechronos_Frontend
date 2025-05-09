@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 
 import UnifiedLogin from './LoginPage/UnifiedLogin';
@@ -7,6 +7,7 @@ import EmployeeDashboard from './Dashboard/Employee';
 import AdminSignup from './Sign Up/AdminSignup';
 import EmployeeSignup from './Sign Up/EmployeeSignup';
 import ForgotPassword from './Forgot Password/ForgotPassword';
+import ProfileModal from './Admin Panel/ProfileModal';
 
 import './App.css';
 
@@ -55,6 +56,7 @@ const AppRoutes = () => {
       <Route path="/employee-signup" element={<EmployeeSignup switchView={switchView} />} />
       <Route path="/forgot-password" element={<ForgotPassword switchView={switchView} />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/admin-dashboard/update-profile/:companyId" element={<ProfileModal />} />
       <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
