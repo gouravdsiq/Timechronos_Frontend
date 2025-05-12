@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, FileText, Users, Briefcase, BarChart2, PieChart, Settings, ChevronDown, Bell, User, LogOut, Menu, ChevronLeft } from 'lucide-react';
+import { Clock, FileText, Users, Briefcase, BarChart2, PieChart, Settings, ChevronDown, Bell, User, LogOut, Menu, ChevronLeft, CheckSquare } from 'lucide-react';
 import RecentActivityModal from '../Admin Panel/RecentActivityModal';
 import ProfileModal from '../Admin Panel/ProfileModal'; // Import ProfileModal
 import { useSelector } from 'react-redux';
@@ -148,11 +148,11 @@ const AdminDashboard = () => {
           {!sidebarCollapsed && <h1 className="text-xl font-bold">TimeChronos</h1>}
         </div>
 
-        {!sidebarCollapsed && (
-          <div className="p-3">
-            <div className="text-xs text-indigo-200 uppercase font-semibold mb-2">Admin Panel</div>
-          </div>
-        )}
+        {/* {!sidebarCollapsed && (
+          // <div className="p-3">
+          //   <div className="text-xs text-indigo-200 uppercase font-semibold mb-2">Admin Panel</div>
+          // </div>
+        )} */}
 
         <nav className="flex-1">
           <div 
@@ -164,27 +164,30 @@ const AdminDashboard = () => {
             <PieChart className="w-5 h-5 mr-3" />
             {!sidebarCollapsed && <span>Dashboard</span>}
           </div>   
-
-          <div 
-            className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
-              activeSection === 'Employees' ? 'bg-indigo-900 text-white border-l-4 border-white' : 'text-indigo-100 hover:bg-indigo-700'
-            }`}
-            onClick={() => setActiveSection('Employees')}
-          >
-            <Users className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>Employees</span>}
-          </div>
-
+          <div
+      className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
+        activeSection === 'Employees' ? 'bg-indigo-900 text-white border-l-4 border-white' : 'text-indigo-100 hover:bg-indigo-700'
+      }`}
+      onClick={handleViewAllEmployees}
+    >
+      <Users className="w-5 h-5 mr-3" />
+      {!sidebarCollapsed && <span>Employees</span>}
+    </div>
           <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
             <Briefcase className="w-5 h-5 mr-3" />
             {!sidebarCollapsed && <span>Clients</span>}
 
           </div>
 
-          <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
-            <BarChart2 className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>Projects</span>}
-          </div>
+          <div
+      className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
+        activeSection === 'Projects' ? 'bg-indigo-900 text-white border-l-4 border-white' : 'text-indigo-100 hover:bg-indigo-700'
+      }`}
+      onClick={handleViewAllActiveProjects}
+    >
+      <BarChart2 className="w-5 h-5 mr-3" />
+      {!sidebarCollapsed && <span>Projects</span>}
+    </div>
 
           <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
             <BarChart2 className="w-5 h-5 mr-3" />
@@ -371,37 +374,48 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
+              <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-medium text-gray-500 mb-1">Avg. Hours Worked</div>
-                  <div className="text-2xl font-bold text-gray-800">{stats.avgHoursWorked}h</div>
+                  <div className="text-sm font-medium text-gray-500 mb-1">Active Clients</div>
+                  <div className="text-2xl font-bold text-gray-800">{stats.activeClients}</div>
                 </div>
                 <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-purple-600" />
+                  <Users className="w-6 h-6 text-purple-600" />
                 </div>
+              </div>
+
+              <div className="mt-auto flex justify-end pt-4">
+                <button 
+                  className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                  // onClick={handleViewAllClients}
+                >
+                  View All
+                </button>
               </div>
             </div>
 
             <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-medium text-gray-500 mb-1">Pending Requests</div>
-                  <div className="text-2xl font-bold text-gray-800">{stats.pendingRequests}</div>
+                  <div className="text-sm font-medium text-gray-500 mb-1">Active Tasks</div>
+                  <div className="text-2xl font-bold text-gray-800">{stats.activeTasks}</div>
                 </div>
                 <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-amber-600" />
+                  <CheckSquare className="w-6 h-6 text-amber-600" />
                 </div>
               </div>
 
               <div className="mt-auto flex justify-end pt-4">
-                <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                <button 
+                  className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                  // onClick={handleViewAllTasks}
+                >
                   View All
                 </button>
               </div>
-            </div>
           </div>
-
+</div>
           {/* Time Stats */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <div className="bg-white rounded-lg shadow-sm p-5">
@@ -443,7 +457,25 @@ const AdminDashboard = () => {
             </div>
 
             <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col">
-              {/* Intentionally left empty for future widget */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-gray-700 font-medium">Upcoming Deadlines</h3>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                  <div>
+                    <div className="text-sm font-medium">Website Redesign</div>
+                    <div className="text-xs text-gray-500">Client: XYZ Corp</div>
+                  </div>
+                  <div className="text-xs font-semibold text-red-500">Tomorrow</div>
+                </div>
+                <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                  <div>
+                    <div className="text-sm font-medium">Mobile App Phase 1</div>
+                    <div className="text-xs text-gray-500">Client: ABC Inc</div>
+                  </div>
+                  <div className="text-xs font-semibold text-amber-500">In 3 days</div>
+                </div>
+              </div>
             </div>
           </div>
 

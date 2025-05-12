@@ -1,46 +1,63 @@
 import React, { useState } from 'react';
-import { Users, ArrowLeft } from 'lucide-react'; // Import the ArrowLeft icon
+import { Users, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AddEmployeeModal from '../Admin Panel/AddEmployee'; // Adjust the path if needed
 
 const EmployeeList = () => {
-  // Sample employees data
-  const employees = [
+  const [employees, setEmployees] = useState([
     { id: 1, name: 'John Doe', email: 'johndoe@example.com', position: 'Web Developer', status: 'Active' },
     { id: 2, name: 'Jane Smith', email: 'janesmith@example.com', position: 'UX Designer', status: 'Inactive' },
     { id: 3, name: 'Michael Brown', email: 'michaelbrown@example.com', position: 'Project Manager', status: 'Active' },
     { id: 4, name: 'Emily Clark', email: 'emilyclark@example.com', position: 'Software Engineer', status: 'Active' },
-    // Add more employees as needed
-  ];
+  ]);
 
-  const [filter, setFilter] = useState('all'); // State to manage the filter
-  const navigate = useNavigate(); // Hook to navigate
+  const [filter, setFilter] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // Function to filter employees based on the selected filter
   const filteredEmployees = employees.filter((employee) => {
     if (filter === 'active') return employee.status === 'Active';
     if (filter === 'inactive') return employee.status === 'Inactive';
-    return true; // Show all employees
+    return true;
   });
 
+  const handleAddEmployee = (newEmployee) => {
+    const newId = employees.length ? Math.max(...employees.map(emp => emp.id)) + 1 : 1;
+    const employeeToAdd = {
+      id: newId,
+      ...newEmployee,
+      status: 'Active',
+    };
+    setEmployees((prev) => [...prev, employeeToAdd]);
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className="flex flex-col p-6 bg-gray-50 h-screen">
-      {/* Back Button */}
+    <div className="flex flex-col p-6 bg-gray-50 h-screen relative">
       <button
-        onClick={() => navigate('/admin-dashboard')} // Navigate to the main dashboard
+        onClick={() => navigate('/admin-dashboard')}
         className="flex items-center mb-4 text-blue-600 hover:text-blue-800 transition duration-200"
       >
-        <ArrowLeft className="w-5 h-5 mr-2 transform transition-transform duration-200 hover:translate-x-1" /> {/* Back arrow icon */}
+        <ArrowLeft className="w-5 h-5 mr-2 transform transition-transform duration-200 hover:translate-x-1" />
         <span>Back to Dashboard</span>
       </button>
 
       <h1 className="text-2xl font-bold mb-4">Employee List</h1>
+
       <div className="bg-white rounded-lg shadow-lg p-5">
-        <div className="flex items-center mb-4">
-          <Users className="w-6 h-6 text-blue-600 mr-2" />
-          <h2 className="text-lg font-semibold">All Employees</h2>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <Users className="w-6 h-6 text-blue-600 mr-2" />
+            <h2 className="text-lg font-semibold">All Employees</h2>
+          </div>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200"
+          >
+            Add New Employee
+          </button>
         </div>
 
-        {/* Toggle Buttons */}
         <div className="mb-4">
           <button
             onClick={() => setFilter('all')}
@@ -62,7 +79,6 @@ const EmployeeList = () => {
           </button>
         </div>
 
-        {/* Employee Table */}
         <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
           <thead className="bg-gray-100">
             <tr>
@@ -86,6 +102,12 @@ const EmployeeList = () => {
           </tbody>
         </table>
       </div>
+
+      <AddEmployeeModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddEmployee={handleAddEmployee}
+      />
     </div>
   );
 };

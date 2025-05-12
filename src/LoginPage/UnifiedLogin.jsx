@@ -30,7 +30,7 @@ const UnifiedLogin = ({ onLoginSuccess }) => {
         company_id: response.data.user.company_id,
         first_name: response.data.user.first_name,
         role: response.data.user.role,
-        email: response.data.user.email
+        email: response.data.user.email,
       }));      
       // console.log(company_id);
       // console.log(response.data.user.email)
