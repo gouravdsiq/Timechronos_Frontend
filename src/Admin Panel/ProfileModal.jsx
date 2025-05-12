@@ -30,7 +30,7 @@ const ProfileModal = () => {
       console.error('Access token is missing');
       return;
     }
-    console.log("Access token being used:", token);
+    // console.log("Access token being used:", token);
 
     const fetchCompanyData = async () => {
       try {

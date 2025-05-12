@@ -129,6 +129,10 @@ const AdminDashboard = () => {
     navigate('/admin-dashboard/active-projects');
   };
 
+  const handleViewAllClients = () => {
+    navigate('/admin-dashboard/client');
+  };
+
   const navigateToProfile = () => {
     const companyid = localStorage.getItem('company_id');
     navigate(`/admin-dashboard/update-profile/${company_id}`);
@@ -388,7 +392,7 @@ const AdminDashboard = () => {
               <div className="mt-auto flex justify-end pt-4">
                 <button 
                   className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                  // onClick={handleViewAllClients}
+                  onClick={handleViewAllClients}
                 >
                   View All
                 </button>

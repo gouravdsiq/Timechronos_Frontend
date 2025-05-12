@@ -9,6 +9,7 @@ import EmployeeSignup from './Sign Up/EmployeeSignup';
 import ForgotPassword from './Forgot Password/ForgotPassword';
 import ProfileModal from './Admin Panel/ProfileModal';
 import EmployeeList from '../src/Admin Panel/EmployeeList'
+import ActiveClient from '../src/Admin Panel/ActiveClient'
 import ActiveProjects from './Admin Panel/ActiveModal';
 
 import './App.css';
@@ -60,6 +61,7 @@ const AppRoutes = () => {
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/admin-dashboard/employee-list" element={< EmployeeList/>} />
       <Route path="/admin-dashboard/active-projects" element={<ActiveProjects />} />
+      <Route path="/admin-dashboard/client" element={<ActiveClient />} />
       <Route path="/admin-dashboard/update-profile/:companyId" element={<ProfileModal />} />
       <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
       <Route path="*" element={<Navigate to="/" replace />} />
