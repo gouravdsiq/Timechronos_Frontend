@@ -36,8 +36,10 @@ const ClientModal = ({ isOpen, onClose, onSubmit, initialData, modalTitle }) => 
       return;
     }
     onSubmit({
-      ...formData,
-      company_id: Number(company_id), // ensure company_id is a number
+      name,
+      code,
+      company_id: Number(company_id),
+      description,
     });
   };
 
@@ -177,39 +179,37 @@ const ActiveClient = () => {
   };
 
   const handleEditClient = async (updatedClient) => {
-  if (!clientToEdit) return;
-  const payload = {
-    client: {
-      id: clientToEdit.id,
+    if (!clientToEdit) return;
+    // Send flat JSON object as expected by backend
+    const payload = {
       name: updatedClient.name,
-      code: updatedClient.code || '',
-      company_id: updatedClient.company_id || 0,
-      description: updatedClient.description || '',
+      code: updatedClient.code,
+      company_id: updatedClient.company_id,
+      description: updatedClient.description,
+    };
+    try {
+      const response = await axiosInstance.put(`/client/update/${clientToEdit.id}`, payload);
+      if (response.data.message) {
+        // Update local state with the response from backend
+        setClients(prev =>
+          prev.map(c => (c.id === clientToEdit.id ? { ...c, ...response.data.client } : c))
+        );
+        alert(response.data.message);
+        setIsEditModalOpen(false);
+        setClientToEdit(null);
+      } else {
+        alert('Update failed: No confirmation message received.');
+      }
+    } catch (error) {
+      alert('Update failed: ' + (error.response?.data?.error || error.message));
     }
   };
-  try {
-    const response = await axiosInstance.put(`/client/update/${clientToEdit.id}`, payload);
-    if (response.data.message) {
-      // Update the local state with the new client data
-      setClients(prev =>
-        prev.map(c => (c.id === clientToEdit.id ? { ...c, ...updatedClient } : c))
-      );
-      alert(response.data.message);
-      setIsEditModalOpen(false);
-      setClientToEdit(null);
-    } else {
-      alert('Update failed: No confirmation message received.');
-    }
-  } catch (error) {
-    alert('Update failed: ' + (error.response?.data?.message || error.message));
-  }
-};
 
   const handleDeleteClient = async (clientId) => {
     if (!window.confirm('Are you sure you want to delete this client?')) return;
 
     try {
-      const response = await axiosInstance.post('/client/delete', { client_id: clientId });
+      const response = await axiosInstance.delete(`/client/delete/${clientId}`)
       if (response.data.message) {
         setClients(prev => prev.filter(client => client.id !== clientId));
         alert(response.data.message);

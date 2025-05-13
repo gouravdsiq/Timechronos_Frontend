@@ -5,11 +5,10 @@ import UnifiedLogin from './LoginPage/UnifiedLogin';
 import AdminDashboard from './Dashboard/Admin';
 import EmployeeDashboard from './Dashboard/Employee';
 import AdminSignup from './Sign Up/AdminSignup';
-import EmployeeSignup from './Sign Up/EmployeeSignup';
 import ForgotPassword from './Forgot Password/ForgotPassword';
 import ProfileModal from './Admin Panel/ProfileModal';
-import EmployeeList from '../src/Admin Panel/EmployeeList'
-import ActiveClient from '../src/Admin Panel/ActiveClient'
+import EmployeeList from './Admin Panel/EmployeeList';
+import ActiveClient from './Admin Panel/ActiveClient';
 import ActiveProjects from './Admin Panel/ActiveModal';
 
 import './App.css';
@@ -17,54 +16,29 @@ import './App.css';
 const AppRoutes = () => {
   const navigate = useNavigate();
 
-  const handleLoginSuccess = (result) => {
-    if (result === 'adminSignup') {
-      navigate('/company-registration');
-    } else if (result === 'employeeSignup') {
-      navigate('/employee-signup');
-    } else if (result === 'forgotPassword') {
-      navigate('/forgot-password');
-    } else if (result === 'admin') {
-      navigate('/admin-dashboard');
-    } else if (result === 'employee') {
-      navigate('/employee-dashboard');
-    } else {
-      navigate('/');
-    }
-  };
-
-  const switchView = (view) => {
-    switch (view) {
-      case 'dashboard':
-        navigate('/');
-        break;
-      case 'adminSignup':
-        navigate('/company-registration');
-        break;
-      case 'employeeSignup':
-        navigate('/employee-signup');
-        break;
-      case 'forgotPassword':
-        navigate('/forgot-password');
-        break;
-      default:
-        navigate('/');
-    }
+  const handleNavigation = (result) => {
+    const routes = {
+      adminSignup: '/company-registration',
+      employeeSignup: '/employee-signup',
+      forgotPassword: '/forgot-password',
+      admin: '/admin-dashboard',
+      employee: '/employee-dashboard',
+    };
+    navigate(routes[result] || '/login');
   };
 
   return (
     <Routes>
-      <Route path="/" element={<UnifiedLogin onLoginSuccess={handleLoginSuccess} />} />
-      <Route path="/company-registration" element={<AdminSignup switchView={switchView} />} />
-      <Route path="/employee-signup" element={<EmployeeSignup switchView={switchView} />} />
-      <Route path="/forgot-password" element={<ForgotPassword switchView={switchView} />} />
+      <Route path="/login" element={<UnifiedLogin onLoginSuccess={handleNavigation} />} />
+      <Route path="/company-registration" element={<AdminSignup />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
-      <Route path="/admin-dashboard/employee-list" element={< EmployeeList/>} />
+      <Route path="/admin-dashboard/employee-list" element={<EmployeeList />} />
       <Route path="/admin-dashboard/active-projects" element={<ActiveProjects />} />
       <Route path="/admin-dashboard/client" element={<ActiveClient />} />
       <Route path="/admin-dashboard/update-profile/:companyId" element={<ProfileModal />} />
       <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axiosInstance from '../axios/config';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminSignup = ({ switchView }) => {
   const [formData, setFormData] = useState({
@@ -16,8 +18,7 @@ const AdminSignup = ({ switchView }) => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -32,7 +33,6 @@ const AdminSignup = ({ switchView }) => {
     
     // Reset status messages
     setError('');
-    setSuccess('');
     
     // Basic validation
     if (
@@ -42,12 +42,34 @@ const AdminSignup = ({ switchView }) => {
       !formData.password || 
       !formData.confirm_password
     ) {
-      setError("Please fill in all required fields");
+      setError('Please fill in all required fields');
+      toast.error('Please fill in all required fields', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        icon: "🚫"
+      });
       return;
     }
 
     if (formData.password !== formData.confirm_password) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
+      toast.error('Passwords do not match', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        icon: "🔒"
+      });
       return;
     }
     
@@ -59,8 +81,7 @@ const AdminSignup = ({ switchView }) => {
       const response = await axiosInstance.post('/company-registration', formData);
       
       console.log('Company info saved:', response.data);
-      setSuccess('Company information saved successfully!');
-
+      
       // Clear form data
       setFormData({
         name: '',
@@ -73,23 +94,69 @@ const AdminSignup = ({ switchView }) => {
         confirm_password: '',
         admin_code: ''
       });
-
-      // Redirect to login page after successful registration
-      navigate('/login'); // Redirect to the login page
+      
+      // Show success toast and wait for it to complete before redirecting
+      // The callback function will be executed after the toast has closed
+      toast.success('Registration successful! Welcome aboard! 🎉', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false, // Don't close on click to ensure full visibility
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        icon: "✅",
+        onClose: () => {
+          // Navigate to login page only after toast has completely closed
+          navigate('/login');
+        }
+      });
 
     } catch (err) {
       console.error('Error saving company info:', err);
-      setError(
-        err.response?.data?.message || 
-        'Failed to save company information. Please try again.'
-      );
+      const errorMessage = err.response?.data?.message || 'Failed to save company information. Please try again.';
+      setError(errorMessage);
+      
+      // Show error toast with enhanced styling
+      toast.error(errorMessage, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        icon: "❌"
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleBackToLogin = () => {
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Configure ToastContainer to ensure toasts persist across route changes */}
+      <ToastContainer 
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        limit={3}
+        transition:Bounce
+      />
+      
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Company Information</h1>
         <p className="text-gray-600 mb-6">Please provide your company details</p>
@@ -97,12 +164,6 @@ const AdminSignup = ({ switchView }) => {
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
             {error}
-          </div>
-        )}
-        
-        {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
-            {success}
           </div>
         )}
         
@@ -238,7 +299,7 @@ const AdminSignup = ({ switchView }) => {
         </form>
         
         <div className="mt-6 text-center">
-          <button onClick={() => switchView && switchView('dashboard')} className="text-blue-600 hover:underline text-sm">
+          <button onClick={handleBackToLogin} className="text-blue-600 hover:underline text-sm">
             Back to Login
           </button>
         </div>

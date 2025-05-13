@@ -10,8 +10,6 @@ const UnifiedLogin = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
- 
-      
 
   const handleSubmit = async (e) => {
     e.preventDefault();
