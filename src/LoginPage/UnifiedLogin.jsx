@@ -3,13 +3,13 @@ import axiosInstance from '../axios/config';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCredentials } from '../redux/authSlice'; // Adjust the path as needed
 
-
 const UnifiedLogin = ({ onLoginSuccess }) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,19 +17,25 @@ const UnifiedLogin = ({ onLoginSuccess }) => {
     setError('');
     
     try {
-      const response = await axiosInstance.post("/login", {
-        email,
+      const response = await axiosInstance.post("company/login", {
+        contact_email:email,
         password
       });
+      // console.log(response);
       
-      console.log(response);
+      
+      // console.log(response);
       dispatch(setCredentials({
         access_token: response.data.access_token,
+        refresh_token: response.data.refresh_token,
+        id:response.data.user.id,
         company_id: response.data.user.company_id,
         first_name: response.data.user.first_name,
+        last_name: response.data.user.last_name,
         role: response.data.user.role,
         email: response.data.user.email,
-      }));      
+      }));    
+   
       // console.log(company_id);
       // console.log(response.data.user.email)
       // console.log(response.data.user.role)

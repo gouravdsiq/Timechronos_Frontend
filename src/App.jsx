@@ -10,6 +10,7 @@ import ProfileModal from './Admin Panel/ProfileModal';
 import EmployeeList from './Admin Panel/EmployeeList';
 import ActiveClient from './Admin Panel/ActiveClient';
 import ActiveProjects from './Admin Panel/ActiveModal';
+import ManagerPage from './Admin Panel/Manager';
 
 import './App.css';
 
@@ -18,9 +19,8 @@ const AppRoutes = () => {
 
   const handleNavigation = (result) => {
     const routes = {
-      adminSignup: '/company-registration',
-      employeeSignup: '/employee-signup',
-      forgotPassword: '/forgot-password',
+      adminSignup: '/company/registration',
+      forgotPassword: 'company/forgot-password',
       admin: '/admin-dashboard',
       employee: '/employee-dashboard',
     };
@@ -29,16 +29,18 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/login" element={<UnifiedLogin onLoginSuccess={handleNavigation} />} />
-      <Route path="/company-registration" element={<AdminSignup />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="company/login" element={<UnifiedLogin onLoginSuccess={handleNavigation} />} />
+      <Route path="company/registration" element={<AdminSignup />} />
+      <Route path="company/forgot-password" element={<ForgotPassword />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/admin-dashboard/employee-list" element={<EmployeeList />} />
       <Route path="/admin-dashboard/active-projects" element={<ActiveProjects />} />
       <Route path="/admin-dashboard/client" element={<ActiveClient />} />
       <Route path="/admin-dashboard/update-profile/:companyId" element={<ProfileModal />} />
+      <Route path="/admin-dashboard/task" element={<ManagerPage />} />
+      <Route path="/admin-dashboard/manager" element={<ManagerPage />} />
       <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="company/login" replace />} />
     </Routes>
   );
 };

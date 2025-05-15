@@ -17,6 +17,7 @@ const ForgotPassword = ({ switchView }) => {
 
     setIsSubmitting(true);
     setMessage('');
+    
 
     try {
       // Send password reset request to backend

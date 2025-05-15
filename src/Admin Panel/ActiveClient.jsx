@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Users, ArrowLeft, Edit2, Trash2 } from 'lucide-react';
+import { Users, ArrowLeft, Edit2 , } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axios/config';
+import { useSelector } from 'react-redux';
+
 
 // Modal component for adding or editing a client
 const ClientModal = ({ isOpen, onClose, onSubmit, initialData, modalTitle }) => {
@@ -134,14 +136,18 @@ const ActiveClient = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-
-  // Fetch clients on component mount
+  const accessToken = useSelector((state) => state.auth.access_token);
   useEffect(() => {
     const fetchClients = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axiosInstance.get('/client');
+        const response = await axiosInstance.get('/client', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+
         const data = response.data.clients || response.data || [];
         setClients(data);
       } catch (err) {
@@ -151,7 +157,7 @@ const ActiveClient = () => {
       }
     };
     fetchClients();
-  }, []);
+  }, [accessToken]);
 
   const filteredClients = clients.filter(client => {
     if (filter === 'active') return client.status === 'Active';
@@ -180,7 +186,6 @@ const ActiveClient = () => {
 
   const handleEditClient = async (updatedClient) => {
     if (!clientToEdit) return;
-    // Send flat JSON object as expected by backend
     const payload = {
       name: updatedClient.name,
       code: updatedClient.code,
@@ -190,7 +195,6 @@ const ActiveClient = () => {
     try {
       const response = await axiosInstance.put(`/client/update/${clientToEdit.id}`, payload);
       if (response.data.message) {
-        // Update local state with the response from backend
         setClients(prev =>
           prev.map(c => (c.id === clientToEdit.id ? { ...c, ...response.data.client } : c))
         );
@@ -205,19 +209,23 @@ const ActiveClient = () => {
     }
   };
 
-  const handleDeleteClient = async (clientId) => {
-    if (!window.confirm('Are you sure you want to delete this client?')) return;
+  const handleArchiveClient = async (clientId) => {
+    if (!window.confirm('Are you sure you want to archive this client?')) return;
 
     try {
-      const response = await axiosInstance.delete(`/client/delete/${clientId}`)
+      const response = await axiosInstance.put(`/client/archive/${clientId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
       if (response.data.message) {
         setClients(prev => prev.filter(client => client.id !== clientId));
         alert(response.data.message);
       } else {
-        alert('Delete failed: No confirmation message received.');
+        alert('Archive failed: No confirmation message received.');
       }
     } catch (error) {
-      alert('Delete failed: ' + (error.response?.data?.message || error.message));
+      alert('Archive failed: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -302,11 +310,14 @@ const ActiveClient = () => {
                       <Edit2 className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => handleDeleteClient(client.id)}
-                      title="Delete Client"
-                      className="p-1 rounded-md text-red-600 hover:bg-red-100 transition duration-200"
+                      onClick={() => handleArchiveClient(client.id)}
+                      title="Archive Client"
+                      className="p-1 rounded-md text-yellow-600 hover:bg-yellow-100 transition duration-200"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h18v18H3V3z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9h18M3 15h18" />
+                      </svg>
                     </button>
                   </td>
                 </tr>
@@ -347,3 +358,4 @@ const ActiveClient = () => {
 };
 
 export default ActiveClient;
+

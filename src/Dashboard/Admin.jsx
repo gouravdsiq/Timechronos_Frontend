@@ -4,6 +4,7 @@ import { Clock, FileText, Users, Briefcase, BarChart2, PieChart, Settings, Chevr
 import RecentActivityModal from '../Admin Panel/RecentActivityModal';
 import ProfileModal from '../Admin Panel/ProfileModal'; // Import ProfileModal
 import { useSelector } from 'react-redux';
+import ManagerPage from '../Admin Panel/Manager';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -13,7 +14,6 @@ const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('Dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false); // State for ProfileModal
-
 
   const first_name = useSelector((state) => state.auth.first_name);
   const capitalizedFirstName =
@@ -133,9 +133,14 @@ const AdminDashboard = () => {
     navigate('/admin-dashboard/client');
   };
 
+  const handleManager = () => {
+    navigate('/admin-dashboard/manager');
+  };
+  
+
   const navigateToProfile = () => {
     const companyid = localStorage.getItem('company_id');
-    navigate(`/admin-dashboard/update-profile/${company_id}`);
+    navigate(`company/update-profile/${company_id}`);
     setShowUserMenu(false);
   };
 
@@ -203,7 +208,9 @@ const AdminDashboard = () => {
             {!sidebarCollapsed && <span>TimeSheet</span>}
           </div>
 
-          <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
+          <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`} 
+          onClick={handleManager}
+          >
             <BarChart2 className="w-5 h-5 mr-3" />
             {!sidebarCollapsed && <span>Manager</span>}
           </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Briefcase, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AddProjectModal from '../Admin Panel/AddProject'; 
+import { useSelector } from 'react-redux';
 
 const ActiveProjects = () => {
   const [projects, setProjects] = useState([]);
