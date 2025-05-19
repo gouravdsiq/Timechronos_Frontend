@@ -142,13 +142,14 @@ const ActiveClient = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axiosInstance.get('/client', {
+        const response = await axiosInstance.get('client', {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
         });
 
-        const data = response.data.clients || response.data || [];
+        const data = response.clients;
+        console.log(data)
         setClients(data);
       } catch (err) {
         setError('Failed to fetch clients from backend');
@@ -167,7 +168,7 @@ const ActiveClient = () => {
 
   const handleAddClient = async (newClient) => {
     try {
-      const response = await axiosInstance.post('/client/add', newClient);
+      const response = await axiosInstance.post('client/add', newClient);
       if (response.data.message) {
         const createdClient = response.data.client || {
           id: clients.length ? Math.max(...clients.map(c => c.id)) + 1 : 1,

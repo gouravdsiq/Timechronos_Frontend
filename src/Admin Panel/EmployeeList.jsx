@@ -1,19 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import AddEmployeeModal from '../Admin Panel/AddEmployee'; // Adjust the path if needed
+import AddEmployeeModal from '../Admin Panel/AddEmployee'
+import axiosInstance from '../axios/config';
+import { useSelector } from 'react-redux';
 
 const EmployeeList = () => {
-  const [employees, setEmployees] = useState([
-    { id: 1, name: 'John Doe', email: 'johndoe@example.com', position: 'Web Developer', status: 'Active' },
-    { id: 2, name: 'Jane Smith', email: 'janesmith@example.com', position: 'UX Designer', status: 'Inactive' },
-    { id: 3, name: 'Michael Brown', email: 'michaelbrown@example.com', position: 'Project Manager', status: 'Active' },
-    { id: 4, name: 'Emily Clark', email: 'emilyclark@example.com', position: 'Software Engineer', status: 'Active' },
-  ]);
-
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const token = useSelector((state) => state.auth.access_token);
+  // Fetch employees data from the backend
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        setLoading(true);
+        
+        
+        const response = await axiosInstance.get(`user/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = response.data;
+      
+        const formattedEmployees = data.map(employee => ({
+          id: employee.id,
+          name: `${employee.first_name || ''} ${employee.last_name || ''}`.trim(),
+          email: employee.email || '',
+          position: employee.role || '',
+          status: employee.role ? 'Active' : 'Inactive' // Assuming if role exists, employee is active
+        }));
+        
+        setEmployees(formattedEmployees);
+      } catch (err) {
+        setError(err.response?.data?.message || err.message);
+        console.error('Error fetching employees:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
 
   const filteredEmployees = employees.filter((employee) => {
     if (filter === 'active') return employee.status === 'Active';
@@ -21,15 +52,43 @@ const EmployeeList = () => {
     return true;
   });
 
-  const handleAddEmployee = (newEmployee) => {
-    const newId = employees.length ? Math.max(...employees.map(emp => emp.id)) + 1 : 1;
-    const employeeToAdd = {
-      id: newId,
-      ...newEmployee,
-      status: 'Active',
-    };
-    setEmployees((prev) => [...prev, employeeToAdd]);
-    setIsModalOpen(false);
+  const handleAddEmployee = async (newEmployee) => {
+    try {
+      
+      // Format the employee data as required by your API
+      const employeeData = {
+        first_name: newEmployee.first_name || newEmployee.name.split(' ')[0],
+        last_name: newEmployee.last_name || newEmployee.name.split(' ').slice(1).join(' '),
+        email: newEmployee.email,
+        role: newEmployee.position || '',
+        // Add any other required fields
+      };
+      
+      // Send the data to the backend
+      await axiosInstance.post('user/create', employeeData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      // Refresh the employee list after successful creation
+      const response = await axiosInstance.get('user/all', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      const data = response.data;
+      const formattedEmployees = data.map(employee => ({
+        id: employee.id,
+        name: `${employee.first_name || ''} ${employee.last_name || ''}`.trim(),
+        email: employee.email || '',
+        position: employee.role || '',
+        status: employee.role ? 'Active' : 'Inactive'
+      }));
+      
+      setEmployees(formattedEmployees);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error('Error adding employee:', err);
+      alert('Failed to add employee. Please try again.');
+    }
   };
 
   return (
@@ -79,28 +138,42 @@ const EmployeeList = () => {
           </button>
         </div>
 
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="py-2 px-4 border-b text-left">Name</th>
-              <th className="py-2 px-4 border-b text-left">Email</th>
-              <th className="py-2 px-4 border-b text-left">Position</th>
-              <th className="py-2 px-4 border-b text-left">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredEmployees.map((employee) => (
-              <tr key={employee.id} className="hover:bg-gray-50 transition duration-200">
-                <td className="py-2 px-4 border-b">{employee.name}</td>
-                <td className="py-2 px-4 border-b">{employee.email}</td>
-                <td className="py-2 px-4 border-b">{employee.position}</td>
-                <td className={`py-2 px-4 border-b ${employee.status === 'Active' ? 'text-green-500' : 'text-red-500'}`}>
-                  {employee.status}
-                </td>
+        {loading ? (
+          <div className="text-center py-4">Loading employees...</div>
+        ) : error ? (
+          <div className="text-center text-red-500 py-4">Error: {error}</div>
+        ) : (
+          <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="py-2 px-4 border-b text-left">Name</th>
+                <th className="py-2 px-4 border-b text-left">Email</th>
+                <th className="py-2 px-4 border-b text-left">Position</th>
+                <th className="py-2 px-4 border-b text-left">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredEmployees.length > 0 ? (
+                filteredEmployees.map((employee) => (
+                  <tr key={employee.id} className="hover:bg-gray-50 transition duration-200">
+                    <td className="py-2 px-4 border-b">{employee.name}</td>
+                    <td className="py-2 px-4 border-b">{employee.email}</td>
+                    <td className="py-2 px-4 border-b">{employee.position || '-'}</td>
+                    <td className={`py-2 px-4 border-b ${employee.status === 'Active' ? 'text-green-500' : 'text-red-500'}`}>
+                      {employee.status || '-'}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="py-4 text-center text-gray-500">
+                    No employees found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
       <AddEmployeeModal

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axiosInstance from '../axios/config';
+import { useNavigate } from 'react-router-dom';
+
 
 const ForgotPassword = ({ switchView }) => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
-
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) {
@@ -87,7 +89,8 @@ const ForgotPassword = ({ switchView }) => {
 
         <div className="mt-4 text-center">
           <button
-            onClick={() => switchView("login")}
+            onClick={() => navigate('/company/login')
+}
             className="text-blue-600 hover:underline text-sm"
           >
             Return to Login

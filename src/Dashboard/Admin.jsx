@@ -70,6 +70,10 @@ const AdminDashboard = () => {
     });
   };
 
+  const SidebarLogo = () => {
+    return <img src="/assets/SideBar Logo.png" alt="Sidebar Logo" />;
+  }
+
   // Update clock
   useEffect(() => {
     const timer = setInterval(() => {
@@ -82,7 +86,7 @@ const AdminDashboard = () => {
   // Handle logout
   const handleLogout = () => {
     console.log('Logging out...');
-    window.location.href = '/login';
+    window.location.href = 'company/login';
   };
 
   // Toggle user menu
@@ -136,37 +140,50 @@ const AdminDashboard = () => {
   const handleManager = () => {
     navigate('/admin-dashboard/manager');
   };
+
+  const handleTimesheet = () => {
+    navigate('/admin-dashboard/timesheet');
+  };
   
 
   const navigateToProfile = () => {
-    const companyid = localStorage.getItem('company_id');
-    navigate(`company/update-profile/${company_id}`);
-    setShowUserMenu(false);
+    // const companyid = localStorage.getItem('company_id');
+    navigate(`/admin-dashboard/profile`);
+    setShowUserMenu(true);
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-[#fff]">
       {/* Sidebar */}
       <div 
-        className={`bg-indigo-800 text-white flex flex-col transition-all duration-300 ease-in-out ${
-          sidebarCollapsed ? 'w-16' : 'w-64'
+        className={`text-[#5A367D] flex flex-col transition-all duration-300 ease-in-out ${
+          sidebarCollapsed ? 'w-16' : 'w-45'
         }`}
+        // style={{ background: 'bg-[#f2effd]' }}
       >
-        <div className={`p-5 flex items-center space-x-2 border-b border-indigo-700 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-          <Clock className="w-6 h-6" />
-          {!sidebarCollapsed && <h1 className="text-xl font-bold">TimeChronos</h1>}
+       <div className={`p-5 flex items-center space-x-2 border-opacity-20 border-[#130b3d] ${sidebarCollapsed ? 'justify-center' : ''}`}>
+      {sidebarCollapsed ? (
+        <img 
+          src="/assets/SidebarLogo.png" 
+          alt="Logo" 
+          className="w-6 h-6 object-contain" 
+        />
+      ) : (
+        <div className="flex items-center">
+          <img 
+            src="/assets/SidebarLogo.png" 
+            alt="Logo" 
+            className="w-6 h-6 object-contain" 
+          />
+          <h1 className="text-xl font-bold ml-2">TimeChronos</h1>
         </div>
-
-        {/* {!sidebarCollapsed && (
-          // <div className="p-3">
-          //   <div className="text-xs text-indigo-200 uppercase font-semibold mb-2">Admin Panel</div>
-          // </div>
-        )} */}
+      )}
+    </div>
 
         <nav className="flex-1">
           <div 
             className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
-              activeSection === 'Dashboard' ? 'bg-indigo-900 text-white border-l-4 border-white' : 'text-indigo-100 hover:bg-indigo-700'
+              activeSection === 'Dashboard' ? 'bg-white bg-opacity-30 text-[#5A367D] border-l-4 border-[#5A367D]' : 'text-[#000] hover:bg-white hover:bg-opacity-20'
             }`}
             onClick={() => setActiveSection('Dashboard')}
           >
@@ -174,62 +191,64 @@ const AdminDashboard = () => {
             {!sidebarCollapsed && <span>Dashboard</span>}
           </div>   
           <div
-      className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
-        activeSection === 'Employees' ? 'bg-indigo-900 text-white border-l-4 border-white' : 'text-indigo-100 hover:bg-indigo-700'
-      }`}
-      onClick={handleViewAllEmployees}
-    >
-      <Users className="w-5 h-5 mr-3" />
-      {!sidebarCollapsed && <span>Employees</span>}
-    </div>
-          <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
+            className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
+              activeSection === 'Employees' ? 'bg-white bg-opacity-30 text-[#5A367D] border-l-4 border-[#5A367D]' : 'text-[#000] hover:bg-white hover:bg-opacity-20'
+            }`}
+            onClick={handleViewAllEmployees}
+          >
+            <Users className="w-5 h-5 mr-3" />
+            {!sidebarCollapsed && <span>Employees</span>}
+          </div>
+          <div className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
             <Briefcase className="w-5 h-5 mr-3" />
             {!sidebarCollapsed && <span>Clients</span>}
-
           </div>
 
           <div
-      className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
-        activeSection === 'Projects' ? 'bg-indigo-900 text-white border-l-4 border-white' : 'text-indigo-100 hover:bg-indigo-700'
-      }`}
-      onClick={handleViewAllActiveProjects}
-    >
-      <BarChart2 className="w-5 h-5 mr-3" />
-      {!sidebarCollapsed && <span>Projects</span>}
-    </div>
+            className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
+              activeSection === 'Projects' ? 'bg-white bg-opacity-30 text-[#5A367D] border-l-4 border-[#5A367D]' : 'text-[#000] hover:bg-white hover:bg-opacity-20'
+            }`}
+            onClick={handleViewAllActiveProjects}
+          >
+            <BarChart2 className="w-5 h-5 mr-3" />
+            {!sidebarCollapsed && <span>Projects</span>}
+          </div>
 
-          <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
+          <div className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
             <BarChart2 className="w-5 h-5 mr-3" />
             {!sidebarCollapsed && <span>Task</span>}
           </div>
 
-          <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
+          <div 
+            className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}
+            onClick={handleTimesheet}
+          >
             <BarChart2 className="w-5 h-5 mr-3" />
             {!sidebarCollapsed && <span>TimeSheet</span>}
           </div>
 
-          <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`} 
-          onClick={handleManager}
+          <div 
+            className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`} 
+            onClick={handleManager}
           >
             <BarChart2 className="w-5 h-5 mr-3" />
             {!sidebarCollapsed && <span>Manager</span>}
           </div>
 
-          <div className={`px-3 py-2 text-indigo-100 hover:bg-indigo-700 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
+          <div className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
             <FileText className="w-5 h-5 mr-3" />
             {!sidebarCollapsed && <span>Reports</span>}
           </div>
-
         </nav>
 
         {!sidebarCollapsed && (
-          <div className="p-4 border-t border-indigo-700 flex items-center mt-auto">
-            <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center">
+          <div className="p-4 border-t border-opacity-20 border-[#130b3d] flex items-center mt-auto">
+            <div className="w-8 h-8 rounded-full bg-white bg-opacity-30 text-[#5A367D] flex items-center justify-center">
               <span className="font-semibold">{firstLetter}</span>
             </div>
             <div className="ml-3">
-            <div className="text-sm font-medium">{first_name}</div>
-              <div className="text-xs text-indigo-300">{email}</div>
+              <div className="text-sm font-medium">{first_name}</div>
+              <div className="text-xs text-[#5A367D] opacity-75">{email}</div>
             </div>
           </div>
         )}
@@ -238,15 +257,15 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Navigation */}
-        <header className="bg-white shadow-sm z-10">
+        <header className="bg-[#fef4f3] hover:bg-white transition-colors duration-300 z-10">
           <div className="flex items-center justify-between px-6 py-3">
             <div className="flex items-center">
               <button 
                 onClick={toggleSidebar}
                 className="mr-4 p-1 rounded-md hover:bg-gray-100 transition-colors"
                 aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              >
-                {sidebarCollapsed ? <Menu className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}  
+               >
+               {sidebarCollapsed ? <Menu className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
               </button>
               <h2 className="text-xl font-semibold text-gray-800">Admin Dashboard</h2>
               <div className="flex items-center ml-4">
@@ -264,7 +283,7 @@ const AdminDashboard = () => {
               </div>
 
               <div className="border-l border-gray-300 h-6"></div>
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" aria-label="Settings">
+              <a href="#" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" aria-label="Settings">
                 <Settings className="w-4 h-4 mr-2" />
               </a>
               <div className="border-l border-gray-300 h-6"></div>
@@ -298,7 +317,7 @@ const AdminDashboard = () => {
                   >
                      <button 
                       onClick={navigateToProfile}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center cursor-pointer"
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center cursor-pointer"
                       role="menuitem"
                     >
                       <User className="w-4 h-4 mr-2" />
@@ -308,7 +327,7 @@ const AdminDashboard = () => {
                     <div className="border-t border-gray-100 my-1"></div>
                     <button 
                       onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
                       role="menuitem"
                     >
                       <LogOut className="w-4 h-4 mr-2" />
@@ -322,13 +341,14 @@ const AdminDashboard = () => {
         </header>
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <main className="flex-1 overflow-y-auto bg-[#fef4f3] p-6 ">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
+            <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col h-full">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <div className="text-sm font-medium text-gray-500 mb-1">Employees</div>
+                  <div className="text-sm font-semibold text-[#44343E] mb-1">Employees</div>
+
                 </div>
                 <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                   <Users className="w-6 h-6 text-blue-600" />
@@ -337,14 +357,14 @@ const AdminDashboard = () => {
 
               <div className="flex items-center space-x-6">
                 <div>
-                  <div className="text-sm text-gray-500">Total</div>
+                  <div className="text-sm text-[#000]">Total</div>
                   <div className="text-2xl font-bold text-gray-800">{stats.totalEmployees}</div>
                   <div className="w-full h-2 bg-gray-100 rounded-full mt-2 overflow-hidden">
                     <div className="h-full bg-blue-500 rounded-full" style={{ width: '100%' }}></div>
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500">Active</div>
+                  <div className="text-sm text-[#000]">Active</div>
                   <div className="text-2xl font-bold text-gray-800">{stats.activeEmployees}</div>
                   <div className="w-full h-2 bg-gray-100 rounded-full mt-2 overflow-hidden">
                     <div
@@ -365,10 +385,10 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
+            <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col h-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-medium text-gray-500 mb-1">Active Projects</div>
+                  <div className="text-sm font-semibold text-[#44343E] mb-1">Active Projects</div>
                   <div className="text-2xl font-bold text-gray-800">{stats.activeProjects}</div>
                 </div>
                 <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
@@ -385,10 +405,10 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
+            <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col h-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-medium text-gray-500 mb-1">Active Clients</div>
+                  <div className="text-sm font-semibold text-[#44343E] mb-1">Active Clients</div>
                   <div className="text-2xl font-bold text-gray-800">{stats.activeClients}</div>
                 </div>
                 <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
@@ -406,10 +426,10 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col h-full">
+            <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col h-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-medium text-gray-500 mb-1">Active Tasks</div>
+                  <div className="text-sm font-semibold text-[#44343E] mb-1">Active Tasks</div>
                   <div className="text-2xl font-bold text-gray-800">{stats.activeTasks}</div>
                 </div>
                 <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
@@ -429,36 +449,36 @@ const AdminDashboard = () => {
 </div>
           {/* Time Stats */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <div className="bg-white rounded-lg shadow-sm p-5">
+            <div className="bg-[#fff] rounded-lg shadow-sm p-5">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-gray-700 font-medium">Total Time Tracked</h3>
+                <h3 className="font-semibold text-[#44343E]">Total Time Tracked</h3>
               </div>
               <div className="flex items-center">
                 <div className="text-3xl font-bold text-gray-800">8h 51m</div>
               </div>
               <div className="text-xs text-gray-500 mt-2">
-                <div>This week: 32h 15m</div>
-                <div>This month: 97h 52m</div>
+                <div className='text-[#000]'>This week: 32h 15m</div>
+                <div className='text-[#000]'>This month: 97h 52m</div>
               </div>
               <div className="w-full h-2 bg-gray-100 rounded-full mt-4 overflow-hidden">
                 <div className="h-full bg-green-500 rounded-full" style={{ width: '75%' }}></div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5">
+            <div className="bg-[#fff] rounded-lg shadow-sm p-5">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-gray-700 font-medium">Productive vs. Idle Time</h3>
+                <h3 className="font-semibold text-[#44343E]">Productive vs. Idle Time</h3>
               </div>
               <div className="flex items-center space-x-6">
                 <div>
-                  <div className="text-sm text-gray-500">Productive</div>
+                  <div className="text-sm text-[#000]">Productive</div>
                   <div className="text-2xl font-bold text-gray-800">7h</div>
                   <div className="w-full h-2 bg-gray-100 rounded-full mt-2 overflow-hidden">
                     <div className="h-full bg-green-500 rounded-full" style={{ width: '82%' }}></div>
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500">Idle</div>
+                  <div className="text-sm text-[#000]">Idle</div>
                   <div className="text-2xl font-bold text-gray-800">1h 30m</div>
                   <div className="w-full h-2 bg-gray-100 rounded-full mt-2 overflow-hidden">
                     <div className="h-full bg-blue-500 rounded-full" style={{ width: '18%' }}></div>
@@ -467,21 +487,21 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5 flex flex-col">
+            <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-gray-700 font-medium">Upcoming Deadlines</h3>
+                <h3 className="font-semibold text-[#44343E]">Upcoming Deadlines</h3>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center pb-2 border-b border-gray-100">
                   <div>
-                    <div className="text-sm font-medium">Website Redesign</div>
+                    <div className="text-sm font-medium text-[#000]">Website Redesign</div>
                     <div className="text-xs text-gray-500">Client: XYZ Corp</div>
                   </div>
                   <div className="text-xs font-semibold text-red-500">Tomorrow</div>
                 </div>
                 <div className="flex justify-between items-center pb-2 border-b border-gray-100">
                   <div>
-                    <div className="text-sm font-medium">Mobile App Phase 1</div>
+                    <div className="text-sm font-medium text-[#000]">Mobile App Phase 1</div>
                     <div className="text-xs text-gray-500">Client: ABC Inc</div>
                   </div>
                   <div className="text-xs font-semibold text-amber-500">In 3 days</div>
@@ -492,9 +512,9 @@ const AdminDashboard = () => {
 
           {/* Recent Activity and Timeline */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-lg shadow-sm p-5">
+            <div className="bg-[#fff] rounded-lg shadow-sm p-5">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-gray-700 font-medium">Recent Employee Activity</h3>
+                <h3 className="font-semibold text-[#44343E]">Recent Employee Activity</h3>
                 <button className="text-sm text-indigo-600 hover:text-indigo-500" onClick={openRecentActivityModal}>View All</button>
               </div>
               <div className="space-y-4">
@@ -515,9 +535,9 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-5">
+            <div className="bg-[#fff] rounded-lg shadow-sm p-5">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-gray-700 font-medium">Timeline</h3>
+                <h3 className="font-semibold text-[#44343E]">Timeline</h3>
                 <button className="text-sm text-indigo-600 hover:text-indigo-500">Timeline Report</button>
               </div>
               <div className="bg-gray-50 rounded-lg p-4 h-56 overflow-hidden">
@@ -558,12 +578,12 @@ const AdminDashboard = () => {
         {showProfileModal && (
           <ProfileModal
             isOpen={showProfileModal}
-            onClose={closeProfileModal}
+            onClose={closeRecentActivityModal}
             userData={userData}
             onSave={(updatedData) => {
               console.log('Updated user data:', updatedData);
               // Handle saving updatedData here if needed
-              closeProfileModal();
+              // closeProfileModal();
             }}
           />
         )}
@@ -573,4 +593,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-

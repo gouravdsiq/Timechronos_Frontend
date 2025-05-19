@@ -26,41 +26,32 @@ const ProfileModal = () => {
   });
 
   useEffect(() => {
-    if (!token) {
-      console.error('Access token is missing');
-      return;
+  if (!token || formData.company_name) return;
+
+  const fetchCompanyData = async () => {
+    try {
+      const response = await axiosInstance.get(`company/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const companyData = response.data;
+
+      setFormData({
+        company_name: companyData.name || '',
+        email_domain: companyData.email_domain || '',
+        contact_email: companyData.contact_email || '',
+        contact_number: companyData.contact_number || '',
+        address: companyData.address || '',
+      });
+
+    } catch (error) {
+      console.error('Error fetching company data:', error);
     }
-    // console.log("Access token being used:", token);
+  };
 
-    const fetchCompanyData = async () => {
-      try {
-        const response = await axiosInstance.get(`/admin`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  fetchCompanyData();
+}, [token]);
 
-        const companyData = response.data.user;
-
-        setFormData({
-          company_name: companyData.name || '',
-          email_domain: companyData.email_domain || '',
-          contact_email: companyData.contact_email || '',
-          contact_number: companyData.contact_number || '',
-          address: companyData.address || '',
-        });
-      } catch (error) {
-        if (error.response) {
-          console.error('Error fetching company data:', error.response.data);
-          console.error('Status code:', error.response.status);
-        } else {
-          console.error('Error fetching company data:', error.message);
-        }
-      }
-    };
-
-    fetchCompanyData();
-  }, [token]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -84,23 +75,25 @@ const ProfileModal = () => {
   };
 
   const handleSaveAll = async () => {
-    try {
-      await axiosInstance.put(`/update-profile/${company_id}`, {
-        name: formData.company_name,
-        email_domain: formData.email_domain,
-        contact_email: formData.contact_email,
-        contact_number: formData.contact_number,
-        address: formData.address,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      navigate('/admin-dashboard');
-    } catch (error) {
-      console.error('Error saving company data:', error);
-    }
-  };
+  try {
+    await axiosInstance.put(`company/update/${company_id}`, {
+      name: formData.company_name,
+      email_domain: formData.email_domain,
+      contact_email: formData.contact_email,
+      contact_number: formData.contact_number,
+      address: formData.address,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    navigate('/admin-dashboard');
+  } catch (error) {
+    console.error('Error saving company data:', error);
+  }
+};
+
 
   const handleCancel = () => {
     navigate('/admin-dashboard');

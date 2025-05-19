@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Clock, CheckCircle, XCircle, ChevronDown, ChevronUp, 
-  Filter, Search, Calendar, ArrowLeft, AlertCircle
+  Filter, Search, Calendar, ArrowLeft, AlertCircle ,Eye, Check, X
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -564,47 +564,56 @@ const ManagerPage = () => {
                         {request.totalHours}h
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {request.status === 'pending' && (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Pending
-                          </span>
-                        )}
-                        {request.status === 'approved' && (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Approved
-                          </span>
-                        )}
-                        {request.status === 'rejected' && (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                            Rejected
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button 
-                          onClick={() => viewTimesheetDetails(request)}
-                          className="text-indigo-600 hover:text-indigo-900 mr-3"
-                        >
-                          View
-                        </button>
-                        
-                        {request.status === 'pending' && (
-                          <>
-                            <button 
-                              onClick={() => handleApprove(request.id)}
-                              className="text-green-600 hover:text-green-900 mr-3"
-                            >
-                              Approve
-                            </button>
-                            <button 
-                              onClick={() => openRejectionModal(request)}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
-                      </td>
+  {request.status === 'pending' && (
+    <span className="px-2 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+      <Clock size={14} className="text-yellow-600" />
+      Pending
+    </span>
+  )}
+  {request.status === 'approved' && (
+    <span className="px-2 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+      <CheckCircle size={14} className="text-green-600" />
+      Approved
+    </span>
+  )}
+  {request.status === 'rejected' && (
+    <span className="px-2 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+      <XCircle size={14} className="text-red-600" />
+      Rejected
+    </span>
+  )}
+</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end space-x-3">
+  {/* View Icon */}
+  <button 
+    onClick={() => viewTimesheetDetails(request)}
+    className="text-indigo-600 hover:text-indigo-900"
+    title="View"
+  >
+    <Eye size={18} />
+  </button>
+
+  {/* Approve & Reject only if pending */}
+  {request.status === 'pending' && (
+    <>
+      <button 
+        onClick={() => handleApprove(request.id)}
+        className="text-green-600 hover:text-green-900"
+        title="Approve"
+      >
+        <Check size={18} />
+      </button>
+      <button 
+        onClick={() => openRejectionModal(request)}
+        className="text-red-600 hover:text-red-900"
+        title="Reject"
+      >
+        <X size={18} />
+      </button>
+    </>
+  )}
+</td>
+
                     </tr>
                   ))}
                 </tbody>
