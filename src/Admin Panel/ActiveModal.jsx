@@ -89,7 +89,7 @@ const ActiveProjects = () => {
     const uniqueDomains = [...new Set(projects.map(project => project.domain))];
     return uniqueDomains;
   }, [projects]);
-
+  
   const clients = useMemo(() => {
     const uniqueClients = [...new Set(projects.map(project => project.clientName))];
     return uniqueClients;
@@ -212,11 +212,11 @@ const ActiveProjects = () => {
       {groupBy !== 'none' && (
         <h3 className="text-lg font-semibold mb-2 text-gray-700">{groupName}</h3>
       )}
-      <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <thead className="bg-blue-600 text-white">
+      <table className="min-w-full bg-[#fef4f3] border border-gray-200 rounded-lg overflow-hidden">
+        <thead className="bg-[#44343E] text-white">
           <tr>
             <th 
-              className="py-3 px-4 border-b text-left cursor-pointer hover:bg-blue-700" 
+              className="py-3 px-4 border-b text-left cursor-pointer hover:bg-[#44343E]" 
               onClick={() => requestSort('name')}
             >
               <div className="flex items-center">
@@ -229,7 +229,7 @@ const ActiveProjects = () => {
               </div>
             </th>
             <th 
-              className="py-3 px-4 border-b text-left cursor-pointer hover:bg-blue-700"
+              className="py-3 px-4 border-b text-left cursor-pointer hover:bg-[#44343E]"
               onClick={() => requestSort('clientName')}
             >
               <div className="flex items-center">
@@ -243,7 +243,7 @@ const ActiveProjects = () => {
             </th>
             <th className="py-3 px-4 border-b text-left">Timeline</th>
             <th 
-              className="py-3 px-4 border-b text-left cursor-pointer hover:bg-blue-700"
+              className="py-3 px-4 border-b text-left cursor-pointer hover:bg-[#44343E]"
               onClick={() => requestSort('domain')}
             >
               <div className="flex items-center">
@@ -260,7 +260,7 @@ const ActiveProjects = () => {
         </thead>
         <tbody>
           {groupProjects.map((project) => (
-            <tr key={project.id} className="hover:bg-blue-100 transition duration-200">
+            <tr key={project.id} className="hover:bg-[#eae4fd] transition duration-200">
               <td className="py-3 px-4 border-b">{project.name}</td>
               <td className="py-3 px-4 border-b">{project.clientName}</td>
               <td className="py-3 px-4 border-b">
@@ -279,37 +279,50 @@ const ActiveProjects = () => {
     </div>
   );
   
-  return (
-    <div className="flex flex-col p-6 bg-gray-50 min-h-screen">
-      {/* Back Button */}
+  // Render empty state with "Add Project" button
+  const renderEmptyState = (message) => (
+    <div className="flex flex-col items-center justify-center py-10">
+      <p className="text-gray-500 text-lg mb-4">{message}</p>
       <button
-        onClick={() => navigate('/admin-dashboard')}
-        className="flex items-center mb-4 text-blue-600 hover:text-blue-800 transition duration-200"
+        onClick={() => setIsModalOpen(true)}
+        className="px-4 py-2 bg-[#44343E] text-white rounded-md hover:bg-[#675f8e] transition duration-200"
       >
-        <ArrowLeft className="w-5 h-5 mr-2" />
-        <span>Back to Dashboard</span>
+        Add New Project
       </button>
-
-      <h1 className="text-2xl font-bold mb-4">Projects</h1>
+    </div>
+  );
+  
+  // Inside the ActiveProjects component
+return (
+  <div className="flex flex-col p-6 bg-gray-50 min-h-screen" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+    {/* Back Button */}
+    <button
+      onClick={() => navigate('/admin-dashboard')}
+      className="flex items-center mb-4 text-[#44343E] hover:text-[#756b9a] transition duration-200"
+    >
+      <ArrowLeft className="w-5 h-5 mr-2" />
+      <span>Back to Dashboard</span>
+    </button>
+    <h1 className="text-2xl font-bold mb-4">Projects</h1>
 
       <div className="bg-white rounded-lg shadow-lg p-5 mb-4">
         {/* View Toggle Buttons */}
         <div className="flex flex-wrap items-center justify-between mb-4">
           <div className="flex space-x-2 mb-2 sm:mb-0">
             <button
-              className={`px-4 py-2 rounded-md ${view === 'active' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'} transition duration-200`}
+              className={`px-4 py-2 rounded-md ${view === 'active' ? 'bg-[#44343E] text-white' : 'bg-gray-200 text-gray-700'} transition duration-200`}
               onClick={() => setView('active')}
             >
               Active Projects
             </button>
             <button
-              className={`px-4 py-2 rounded-md ${view === 'upcoming' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'} transition duration-200`}
+              className={`px-4 py-2 rounded-md ${view === 'upcoming' ? 'bg-[#44343E] text-white' : 'bg-gray-200 text-gray-700'} transition duration-200`}
               onClick={() => setView('upcoming')}
             >
               Upcoming Projects
             </button>
             <button
-              className={`px-4 py-2 rounded-md ${view === 'deadlineExceeded' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'} transition duration-200`}
+              className={`px-4 py-2 rounded-md ${view === 'deadlineExceeded' ? 'bg-[#44343E] text-white' : 'bg-gray-200 text-gray-700'} transition duration-200`}
               onClick={() => setView('deadlineExceeded')}
             >
               Deadline Exceeded
@@ -319,7 +332,7 @@ const ActiveProjects = () => {
           {/* Add New Project Button */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200"
+            className="px-4 py-2 bg-[#44343E] text-white rounded-md hover:bg-[#675f8e] transition duration-200"
           >
             Add New Project
           </button>
@@ -453,7 +466,7 @@ const ActiveProjects = () => {
               )}
               {(filters.domain || filters.clientName) && (
                 <button 
-                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  className="text-sm text-[#44343E] hover:text-[#44343E] underline"
                   onClick={resetFilters}
                 >
                   Clear All
@@ -469,12 +482,19 @@ const ActiveProjects = () => {
           <div className="text-gray-500">Loading projects...</div>
         ) : error ? (
           <div className="text-red-500">{error}</div>
-        ) : Object.keys(groupedProjects).length === 0 ? (
-          <div className="text-gray-500">No projects found for selected criteria.</div>
+        ) : Object.keys(groupedProjects).length === 0 || Object.values(groupedProjects).every(group => group.length === 0) ? (
+          // Empty state messages based on current view
+          view === 'active' ? 
+            renderEmptyState("No active projects found.") :
+          view === 'upcoming' ?
+            renderEmptyState("No upcoming projects found.") :
+            renderEmptyState("No deadline exceeded projects found.")
         ) : (
           <>
             {Object.entries(groupedProjects).map(([groupName, groupProjects]) => 
-              renderProjectTable(groupProjects, groupName)
+              groupProjects.length > 0 ? 
+                renderProjectTable(groupProjects, groupName) : 
+                null
             )}
           </>
         )}

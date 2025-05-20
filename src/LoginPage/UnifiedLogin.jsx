@@ -87,7 +87,7 @@ const UnifiedLogin = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f2effd] px-">
+    <div className="min-h-screen flex items-center justify-center bg-[#f2effd] px-" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
         <TimeChronosLogo />
         

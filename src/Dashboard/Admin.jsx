@@ -1,66 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, FileText, Users, Briefcase, BarChart2, PieChart, Settings, ChevronDown, Bell, User, LogOut, Menu, ChevronLeft, CheckSquare } from 'lucide-react';
+import { Clock, FileText, Users, Briefcase, BarChart2, PieChart, CheckSquare } from 'lucide-react';
 import RecentActivityModal from '../Admin Panel/RecentActivityModal';
-import ProfileModal from '../Admin Panel/ProfileModal'; // Import ProfileModal
+import ProfileModal from '../Admin Panel/ProfileModal';
 import { useSelector } from 'react-redux';
-import ManagerPage from '../Admin Panel/Manager';
+import Sidebar from '../components/Sidebar';
+import Navbar from '../components/Navbar';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [currentDate] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const [activeSection, setActiveSection] = useState('Dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false); // State for ProfileModal
-
-  const first_name = useSelector((state) => state.auth.first_name);
-  const capitalizedFirstName =
-  first_name.charAt(0).toUpperCase() + first_name.slice(1);
-
-  const email = useSelector((state) => state.auth.email);
-  const company_id = useSelector((state) => state.auth.company_id);
-  // console.log(company_id)
-  // console.log(email);
-  
-  const firstLetter = first_name ? first_name.charAt(0).toUpperCase() : '';
-
-  // // Sample company ID - in a real app, this would come from auth context/state
-  // const companyId = '123';
-
-  // Date picker states
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
-  const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
-
-  // Modal state for RecentActivityModal
   const [showRecentActivityModal, setShowRecentActivityModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
-  // Fake data for dashboard stats
-  const stats = {
-    totalEmployees: 28,
-    activeEmployees: 22,
-    activeProjects: 12,
-    avgHoursWorked: 7.5,
-    pendingRequests: 7
-  };
-
-  // Sample employee activity data
-  const recentActivity = [
-    { id: 1, name: 'Sarah Johnson', action: 'Started work', project: 'Web Redesign', time: '9:15 AM' },
-    { id: 2, name: 'David Miller', action: 'Completed task', project: 'Mobile App', time: '10:30 AM' },
-    { id: 3, name: 'Alex Wong', action: 'Submitted report', project: 'Client Portal', time: '11:45 AM' },
-    { id: 4, name: 'Emma Davis', action: 'Break', project: '-', time: '12:30 PM' }
-  ];
-
-  // Format date
+  // Format date and time functions
   const formatDate = (date) => {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
   };
 
-  // Format time (HH:MM:SS)
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -69,10 +30,6 @@ const AdminDashboard = () => {
       hour12: true
     });
   };
-
-  const SidebarLogo = () => {
-    return <img src="/assets/SideBar Logo.png" alt="Sidebar Logo" />;
-  }
 
   // Update clock
   useEffect(() => {
@@ -83,37 +40,24 @@ const AdminDashboard = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Handle logout
-  const handleLogout = () => {
-    console.log('Logging out...');
-    window.location.href = 'company/login';
+  // Fake data for dashboard stats
+  const stats = {
+    totalEmployees: 28,
+    activeEmployees: 22,
+    activeProjects: 12,
+    avgHoursWorked: 7.5,
+    pendingRequests: 7,
+    activeClients: 15,
+    activeTasks: 24
   };
 
-  // Toggle user menu
-  const toggleUserMenu = () => {
-    setShowUserMenu(!showUserMenu);
-  };
-
-  // Toggle sidebar
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showUserMenu && !event.target.closest('.user-menu-container')) {
-        setShowUserMenu(false);
-      }
-
-      // no datePickerRef defined or used, so removed related condition to avoid errors
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showUserMenu]);
+  // Sample employee activity data
+  const recentActivity = [
+    { id: 1, name: 'Sarah Johnson', action: 'Started work', project: 'Web Redesign', time: '9:15 AM' },
+    { id: 2, name: 'David Miller', action: 'Completed task', project: 'Mobile App', time: '10:30 AM' },
+    { id: 3, name: 'Alex Wong', action: 'Submitted report', project: 'Client Portal', time: '11:45 AM' },
+    { id: 4, name: 'Emma Davis', action: 'Break', project: '-', time: '12:30 PM' }
+  ];
 
   // Functions to open/close the Recent Activity modal
   const openRecentActivityModal = () => {
@@ -124,231 +68,33 @@ const AdminDashboard = () => {
     setShowRecentActivityModal(false);
   };
 
-  // Navigate to employee list on "View All" click in Employees card
-  const handleViewAllEmployees = () => {
-    navigate('/admin-dashboard/employee-list');
-  };
-
-  const handleViewAllActiveProjects = () => {
-    navigate('/admin-dashboard/active-projects');
-  };
-
-  const handleViewAllClients = () => {
-    navigate('/admin-dashboard/client');
-  };
-
-  const handleManager = () => {
-    navigate('/admin-dashboard/manager');
-  };
-
-  const handleTimesheet = () => {
-    navigate('/admin-dashboard/timesheet');
-  };
-  
-
-  const navigateToProfile = () => {
-    // const companyid = localStorage.getItem('company_id');
-    navigate(`/admin-dashboard/profile`);
-    setShowUserMenu(true);
-  };
-
   return (
-    <div className="flex h-screen bg-[#fff]">
-      {/* Sidebar */}
-      <div 
-        className={`text-[#5A367D] flex flex-col transition-all duration-300 ease-in-out ${
-          sidebarCollapsed ? 'w-16' : 'w-45'
-        }`}
-        // style={{ background: 'bg-[#f2effd]' }}
-      >
-       <div className={`p-5 flex items-center space-x-2 border-opacity-20 border-[#130b3d] ${sidebarCollapsed ? 'justify-center' : ''}`}>
-      {sidebarCollapsed ? (
-        <img 
-          src="/assets/SidebarLogo.png" 
-          alt="Logo" 
-          className="w-6 h-6 object-contain" 
-        />
-      ) : (
-        <div className="flex items-center">
-          <img 
-            src="/assets/SidebarLogo.png" 
-            alt="Logo" 
-            className="w-6 h-6 object-contain" 
-          />
-          <h1 className="text-xl font-bold ml-2">TimeChronos</h1>
-        </div>
-      )}
-    </div>
-
-        <nav className="flex-1">
-          <div 
-            className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
-              activeSection === 'Dashboard' ? 'bg-white bg-opacity-30 text-[#5A367D] border-l-4 border-[#5A367D]' : 'text-[#000] hover:bg-white hover:bg-opacity-20'
-            }`}
-            onClick={() => setActiveSection('Dashboard')}
-          >
-            <PieChart className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>Dashboard</span>}
-          </div>   
-          <div
-            className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
-              activeSection === 'Employees' ? 'bg-white bg-opacity-30 text-[#5A367D] border-l-4 border-[#5A367D]' : 'text-[#000] hover:bg-white hover:bg-opacity-20'
-            }`}
-            onClick={handleViewAllEmployees}
-          >
-            <Users className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>Employees</span>}
-          </div>
-          <div className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
-            <Briefcase className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>Clients</span>}
-          </div>
-
-          <div
-            className={`px-3 py-2 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center ${
-              activeSection === 'Projects' ? 'bg-white bg-opacity-30 text-[#5A367D] border-l-4 border-[#5A367D]' : 'text-[#000] hover:bg-white hover:bg-opacity-20'
-            }`}
-            onClick={handleViewAllActiveProjects}
-          >
-            <BarChart2 className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>Projects</span>}
-          </div>
-
-          <div className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
-            <BarChart2 className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>Task</span>}
-          </div>
-
-          <div 
-            className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}
-            onClick={handleTimesheet}
-          >
-            <BarChart2 className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>TimeSheet</span>}
-          </div>
-
-          <div 
-            className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`} 
-            onClick={handleManager}
-          >
-            <BarChart2 className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>Manager</span>}
-          </div>
-
-          <div className={`px-3 py-2 text-[#000] hover:bg-white hover:bg-opacity-20 cursor-pointer flex ${sidebarCollapsed ? 'justify-center' : ''} items-center`}>
-            <FileText className="w-5 h-5 mr-3" />
-            {!sidebarCollapsed && <span>Reports</span>}
-          </div>
-        </nav>
-
-        {!sidebarCollapsed && (
-          <div className="p-4 border-t border-opacity-20 border-[#130b3d] flex items-center mt-auto">
-            <div className="w-8 h-8 rounded-full bg-white bg-opacity-30 text-[#5A367D] flex items-center justify-center">
-              <span className="font-semibold">{firstLetter}</span>
-            </div>
-            <div className="ml-3">
-              <div className="text-sm font-medium">{first_name}</div>
-              <div className="text-xs text-[#5A367D] opacity-75">{email}</div>
-            </div>
-          </div>
-        )}
-      </div>
+    <div className="flex h-screen bg-[#fff]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+      {/* Sidebar Component */}
+      <Sidebar 
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Navigation */}
-        <header className="bg-[#fef4f3] hover:bg-white transition-colors duration-300 z-10">
-          <div className="flex items-center justify-between px-6 py-3">
-            <div className="flex items-center">
-              <button 
-                onClick={toggleSidebar}
-                className="mr-4 p-1 rounded-md hover:bg-gray-100 transition-colors"
-                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-               >
-               {sidebarCollapsed ? <Menu className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-              </button>
-              <h2 className="text-xl font-semibold text-gray-800">Admin Dashboard</h2>
-              <div className="flex items-center ml-4">
-                <div className="text-sm text-gray-500">{formatDate(currentDate)}</div>
-                <div className="text-sm text-gray-500 ml-2">• {formatTime(currentTime)}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <button className="p-1 rounded-full hover:bg-gray-100 relative" aria-label="Notifications">
-                  <Bell className="w-5 h-5 text-gray-600" />
-                  <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-                </button>
-              </div>
-
-              <div className="border-l border-gray-300 h-6"></div>
-              <a href="#" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" aria-label="Settings">
-                <Settings className="w-4 h-4 mr-2" />
-              </a>
-              <div className="border-l border-gray-300 h-6"></div>
-
-              {/* User profile with dropdown */}
-              <div className="relative user-menu-container">
-                <div 
-                  className="flex items-center cursor-pointer" 
-                  onClick={toggleUserMenu}
-                  tabIndex={0}
-                  role="button"
-                  aria-haspopup="true"
-                  aria-expanded={showUserMenu}
-                  aria-label="User menu"
-                >
-                  <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center">
-                    <User className="w-4 h-4" />
-                  </div>
-                  <div className="text-sm font-medium">{capitalizedFirstName}</div>
-
-                  <ChevronDown className="w-4 h-4 ml-1 text-gray-500" />
-                </div>
-
-                {/* Dropdown Menu */}
-                {showUserMenu && (
-                  <div 
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border border-gray-200"
-                    role="menu"
-                    aria-orientation="vertical"
-                    aria-label="User menu"
-                  >
-                     <button 
-                      onClick={navigateToProfile}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center cursor-pointer"
-                      role="menuitem"
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Profile
-                    </button>
-
-                    <div className="border-t border-gray-100 my-1"></div>
-                    <button 
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center"
-                      role="menuitem"
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </header>
+      <div className="flex-1 flex flex-col overflow-hidden" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        {/* Navbar Component */}
+        <Navbar 
+          sidebarCollapsed={sidebarCollapsed}
+          setSidebarCollapsed={setSidebarCollapsed}
+          pageTitle="Admin Dashboard"
+        />
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto bg-[#fef4f3] p-6 ">
+        <main className="flex-1 overflow-y-auto bg-[#fef4f3] p-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col h-full">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="text-sm font-semibold text-[#44343E] mb-1">Employees</div>
-
                 </div>
                 <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                   <Users className="w-6 h-6 text-blue-600" />
@@ -378,7 +124,7 @@ const AdminDashboard = () => {
               <div className="mt-auto flex justify-end pt-4">
                 <button 
                   className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                  onClick={handleViewAllEmployees}
+                  onClick={() => navigate('/admin-dashboard/employee-list')}
                 >
                   View All
                 </button>
@@ -397,8 +143,9 @@ const AdminDashboard = () => {
               </div>
 
               <div className="mt-auto flex justify-end pt-4">
-                <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                onClick={handleViewAllActiveProjects}
+                <button 
+                  className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                  onClick={() => navigate('/admin-dashboard/active-projects')}
                 >
                   View All
                 </button>
@@ -419,7 +166,7 @@ const AdminDashboard = () => {
               <div className="mt-auto flex justify-end pt-4">
                 <button 
                   className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                  onClick={handleViewAllClients}
+                  onClick={() => navigate('/admin-dashboard/client')}
                 >
                   View All
                 </button>
@@ -440,13 +187,13 @@ const AdminDashboard = () => {
               <div className="mt-auto flex justify-end pt-4">
                 <button 
                   className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
-                  // onClick={handleViewAllTasks}
                 >
                   View All
                 </button>
               </div>
+            </div>
           </div>
-</div>
+
           {/* Time Stats */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <div className="bg-[#fff] rounded-lg shadow-sm p-5">
@@ -578,12 +325,11 @@ const AdminDashboard = () => {
         {showProfileModal && (
           <ProfileModal
             isOpen={showProfileModal}
-            onClose={closeRecentActivityModal}
-            userData={userData}
+            onClose={() => setShowProfileModal(false)}
+            userData={{}} // Pass appropriate user data here
             onSave={(updatedData) => {
               console.log('Updated user data:', updatedData);
-              // Handle saving updatedData here if needed
-              // closeProfileModal();
+              setShowProfileModal(false);
             }}
           />
         )}

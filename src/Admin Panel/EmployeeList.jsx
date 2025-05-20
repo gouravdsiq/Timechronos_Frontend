@@ -92,7 +92,7 @@ const EmployeeList = () => {
   };
 
   return (
-    <div className="flex flex-col p-6 bg-gray-50 h-screen relative">
+    <div className="flex flex-col p-6 bg-gray-50 h-screen relative" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <button
         onClick={() => navigate('/admin-dashboard')}
         className="flex items-center mb-4 text-blue-600 hover:text-blue-800 transition duration-200"

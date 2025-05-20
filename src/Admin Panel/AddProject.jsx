@@ -51,7 +51,7 @@ const AddProject = ({ isOpen, onClose, onAddProject }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
         <h3 className="text-xl font-semibold mb-4">Add New Project</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -135,7 +135,7 @@ const AddProject = ({ isOpen, onClose, onAddProject }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
+              className="px-4 py-2 rounded-md bg-[#44343E] text-white hover:bg-[#675f8e] transition duration-200"
             >
               Add New Project
             </button>

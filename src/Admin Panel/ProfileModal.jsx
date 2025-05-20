@@ -100,7 +100,7 @@ const ProfileModal = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col h-screen w-screen">
+    <div className="min-h-screen bg-gray-50 flex flex-col h-screen w-screen" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="bg-indigo-700 px-4 py-3 shadow-md">
         <div className="w-full flex items-center text-white">
           <button

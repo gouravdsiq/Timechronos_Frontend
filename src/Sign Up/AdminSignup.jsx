@@ -114,7 +114,7 @@ const AdminSignup = ({ switchView }) => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#f2eefc] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#f2eefc] py-12 px-4 sm:px-6 lg:px-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
         <TimeChronosLogo />
         

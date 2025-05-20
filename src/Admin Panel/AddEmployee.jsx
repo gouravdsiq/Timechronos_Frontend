@@ -37,7 +37,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onAddEmployee }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
         <h3 className="text-xl font-semibold mb-4">Add New Employee</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
