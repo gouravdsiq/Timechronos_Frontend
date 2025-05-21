@@ -11,5 +11,7 @@ export default defineConfig({
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
     },    // allow any hostname
+     host: '0.0.0.0',   // Binds to all network interfaces
+    port: 5173   
   },
 })

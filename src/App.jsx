@@ -6,13 +6,15 @@ import AdminDashboard from './Dashboard/Admin';
 import EmployeeDashboard from './Dashboard/Employee';
 import AdminSignup from './Sign Up/AdminSignup';
 import ForgotPassword from './Forgot Password/ForgotPassword';
-import ProfileModal from './Admin Panel/ProfileModal';
+import { ToastContainer } from 'react-toastify';
+
+// Import Admin Dashboard child components
 import EmployeeList from './Admin Panel/EmployeeList';
-import ActiveClient from './Admin Panel/ActiveClient';
 import ActiveProjects from './Admin Panel/ActiveModal';
+import ActiveClient from './Admin Panel/ActiveClient';
+import ProfileModal from './Admin Panel/ProfileModal';
 import ManagerPage from './Admin Panel/Manager';
 import Timesheet from './Admin Panel/Timesheet';
-import { ToastContainer } from 'react-toastify';
 
 import './App.css';
 
@@ -36,14 +38,22 @@ const AppRoutes = () => {
       <Route path="company/login" element={<UnifiedLogin onLoginSuccess={handleNavigation} />} />
       <Route path="company/registration" element={<AdminSignup />} />
       <Route path="company/forgot-password" element={<ForgotPassword />} />
-      <Route path="/admin-dashboard" element={<AdminDashboard />} />
-      <Route path="/admin-dashboard/employee-list" element={<EmployeeList />} />
-      <Route path="/admin-dashboard/active-projects" element={<ActiveProjects />} />
-      <Route path="/admin-dashboard/client" element={<ActiveClient />} />
-      <Route path="/admin-dashboard/profile" element={<ProfileModal />} />
-      <Route path="/admin-dashboard/task" element={<ManagerPage />} />
-      <Route path="/admin-dashboard/manager" element={<ManagerPage />} />
-      <Route path="/admin-dashboard/timesheet" element={<Timesheet />} />
+      
+      {/* Admin Dashboard with nested routes */}
+      <Route path="/admin-dashboard" element={<AdminDashboard />}>
+        {/* Default dashboard content */}
+        <Route index element={<AdminDashboard.DashboardContent />} />
+        
+        {/* Nested routes for Admin Dashboard */}
+        <Route path="employee-list" element={<EmployeeList />} />
+        <Route path="active-projects" element={<ActiveProjects />} />
+        <Route path="client" element={<ActiveClient />} />
+        <Route path="profile" element={<ProfileModal />} />
+        <Route path="task" element={<ManagerPage />} />
+        <Route path="manager" element={<ManagerPage />} />
+        <Route path="timesheet" element={<Timesheet />} />
+      </Route>
+      
       <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
       <Route path="*" element={<Navigate to="company/login" replace />} />
     </Routes>
