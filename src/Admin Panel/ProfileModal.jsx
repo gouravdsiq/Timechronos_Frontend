@@ -26,32 +26,31 @@ const ProfileModal = () => {
   });
 
   useEffect(() => {
-  if (!token || formData.company_name) return;
+    if (!token || formData.company_name) return;
 
-  const fetchCompanyData = async () => {
-    try {
-      const response = await axiosInstance.get(`company/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const fetchCompanyData = async () => {
+      try {
+        const response = await axiosInstance.get(`company/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      const companyData = response.data;
+        const companyData = response.data;
 
-      setFormData({
-        company_name: companyData.name || '',
-        email_domain: companyData.email_domain || '',
-        contact_email: companyData.contact_email || '',
-        contact_number: companyData.contact_number || '',
-        address: companyData.address || '',
-      });
+        setFormData({
+          company_name: companyData.name || '',
+          email_domain: companyData.email_domain || '',
+          contact_email: companyData.contact_email || '',
+          contact_number: companyData.contact_number || '',
+          address: companyData.address || '',
+        });
 
-    } catch (error) {
-      console.error('Error fetching company data:', error);
-    }
-  };
+      } catch (error) {
+        console.error('Error fetching company data:', error);
+      }
+    };
 
-  fetchCompanyData();
-}, [token]);
-
+    fetchCompanyData();
+  }, [token]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -75,32 +74,31 @@ const ProfileModal = () => {
   };
 
   const handleSaveAll = async () => {
-  try {
-    await axiosInstance.put(`company/update/${company_id}`, {
-      name: formData.company_name,
-      email_domain: formData.email_domain,
-      contact_email: formData.contact_email,
-      contact_number: formData.contact_number,
-      address: formData.address,
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      await axiosInstance.put(`company/update/${company_id}`, {
+        name: formData.company_name,
+        email_domain: formData.email_domain,
+        contact_email: formData.contact_email,
+        contact_number: formData.contact_number,
+        address: formData.address,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    navigate('/admin-dashboard');
-  } catch (error) {
-    console.error('Error saving company data:', error);
-  }
-};
-
+      navigate('/admin-dashboard');
+    } catch (error) {
+      console.error('Error saving company data:', error);
+    }
+  };
 
   const handleCancel = () => {
     navigate('/admin-dashboard');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col h-screen w-screen" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+    <div className="min-h-screen bg-gray-50 flex flex-col" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="bg-indigo-700 px-4 py-3 shadow-md">
         <div className="w-full flex items-center text-white">
           <button

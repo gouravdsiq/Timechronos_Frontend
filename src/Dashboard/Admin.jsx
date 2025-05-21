@@ -77,6 +77,27 @@ const DashboardContent = ({ openRecentActivityModal }) => {
         <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col h-full">
           <div className="flex items-center justify-between">
             <div>
+              <div className="text-sm font-semibold text-[#44343E] mb-1">Active Clients</div>
+              <div className="text-2xl font-bold text-gray-800">{stats.activeClients}</div>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+              <Users className="w-6 h-6 text-purple-600" />
+            </div>
+          </div>
+
+          <div className="mt-auto flex justify-end pt-4">
+            <button 
+              className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
+              onClick={() => navigate('/admin-dashboard/client')}
+            >
+              View All
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col h-full">
+          <div className="flex items-center justify-between">
+            <div>
               <div className="text-sm font-semibold text-[#44343E] mb-1">Active Projects</div>
               <div className="text-2xl font-bold text-gray-800">{stats.activeProjects}</div>
             </div>
@@ -95,26 +116,7 @@ const DashboardContent = ({ openRecentActivityModal }) => {
           </div>
         </div>
 
-        <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col h-full">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold text-[#44343E] mb-1">Active Clients</div>
-              <div className="text-2xl font-bold text-gray-800">{stats.activeClients}</div>
-            </div>
-            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-              <Users className="w-6 h-6 text-purple-600" />
-            </div>
-          </div>
-
-          <div className="mt-auto flex justify-end pt-4">
-            <button 
-              className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200"
-              onClick={() => navigate('/admin-dashboard/client')}
-            >
-              View All
-            </button>
-          </div>
-        </div>
+        
 
         <div className="bg-[#fff] rounded-lg shadow-sm p-5 flex flex-col h-full">
           <div className="flex items-center justify-between">

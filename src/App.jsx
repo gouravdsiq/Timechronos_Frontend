@@ -15,6 +15,7 @@ import ActiveClient from './Admin Panel/ActiveClient';
 import ProfileModal from './Admin Panel/ProfileModal';
 import ManagerPage from './Admin Panel/Manager';
 import Timesheet from './Admin Panel/Timesheet';
+import ActiveTask from './Admin Panel/ActiveTask'
 
 import './App.css';
 
@@ -49,7 +50,7 @@ const AppRoutes = () => {
         <Route path="active-projects" element={<ActiveProjects />} />
         <Route path="client" element={<ActiveClient />} />
         <Route path="profile" element={<ProfileModal />} />
-        <Route path="task" element={<ManagerPage />} />
+        <Route path="task" element={<ActiveTask/>} />
         <Route path="manager" element={<ManagerPage />} />
         <Route path="timesheet" element={<Timesheet />} />
       </Route>

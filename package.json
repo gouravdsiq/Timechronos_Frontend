@@ -19,7 +19,7 @@
     "@progress/kendo-react-inputs": "^10.2.0",
     "@progress/kendo-react-intl": "^10.2.0",
     "@progress/kendo-react-layout": "^10.2.0",
-    "@progress/kendo-theme-default": "^11.0.1",
+    "@progress/kendo-theme-default": "^11.0.2",
     "@reduxjs/toolkit": "^2.8.1",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
