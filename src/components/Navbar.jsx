@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 const Navbar = ({ 
   sidebarCollapsed, 
   setSidebarCollapsed, 
-  // pageTitle = "Admin Dashboard" 
+  pageTitle = "Admin Dashboard" 
 }) => {
   const navigate = useNavigate();
   const [currentDate] = useState(new Date());
@@ -37,6 +37,7 @@ const Navbar = ({
   };
 
   // Format time (HH:MM:SS AM/PM)
+  
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -97,7 +98,7 @@ const Navbar = ({
           >
             {sidebarCollapsed ? <Menu className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
           </button>
-          {/* <h2 className="text-xl font-semibold text-gray-800">{pageTitle}</h2> */}
+          <h2 className="text-xl font-semibold text-gray-800">{pageTitle}</h2>
           <div className="flex items-center ml-4">
             <div className="text-sm text-gray-500">{formatDate(currentDate)}</div>
             <div className="text-sm text-gray-500 ml-2">• {formatTime(currentTime)}</div>

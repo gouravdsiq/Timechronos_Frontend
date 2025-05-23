@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axiosInstance from '../axios/config';
 import { useNavigate } from 'react-router-dom';
 import { showToast, TOAST_TYPES } from '../ToastMessage';
-import { ComboBox } from '@progress/kendo-react-dropdowns';
 
 const TimeChronosLogo = () => {
   return (
@@ -19,40 +18,58 @@ const TimeChronosLogo = () => {
 const AdminSignup = ({ switchView }) => {
   const [formData, setFormData] = useState({
     name: '',
-    industry: '',
-    email_domain: '',
-    contact_email: '',
-    contact_number: '',
-    address: '',
+    first_name: '',
+    last_name: '',
+    email: '',
     password: '',
     confirm_password: '',
+    industry: '',
+    contact_number: '',
+    address: '',
+    country_id: ''
   });
+  
+  const [countries, setCountries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
 
+  // Mock countries data - replace with actual API call
+  useEffect(() => {
+    // You should replace this with your actual countries API call
+    const mockCountries = [
+      { id: 'f826a65f-b28a-4b58-85b6-ec0f58912d93', name: 'India' },
+      { id: 'a123b456-c789-4def-9012-345678901234', name: 'United States' },
+      { id: 'b234c567-d890-4ef1-2345-678901234567', name: 'United Kingdom' },
+      { id: 'c345d678-e901-4f23-4567-890123456789', name: 'Canada' },
+      { id: 'd456e789-f012-4345-6789-012345678901', name: 'Australia' }
+    ];
+    setCountries(mockCountries);
+  }, []);
+
   const handleChange = (e) => {
-    const { id, value } = e.target;
+    const { id, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [id]: value
+      [id]: type === 'checkbox' ? checked : value
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Reset status messages
     setError('');
     setSuccess(null);
     
-    // Basic validation
+    // Required field validation
     if (
       !formData.name || 
-      !formData.industry || 
-      !formData.contact_email || 
+      !formData.first_name || 
+      !formData.last_name || 
+      !formData.email || 
       !formData.password || 
-      !formData.confirm_password
+      !formData.confirm_password ||
+      !formData.country_id
     ) {
       setError('Please fill in all required fields');
       return;
@@ -63,35 +80,36 @@ const AdminSignup = ({ switchView }) => {
       return;
     }
     
-    // Start loading state
     setIsLoading(true);
     
     try {
-      // Send company data to backend
-      const response = await axiosInstance.post('company/register', formData);
+      // Prepare data for API - exclude confirm_password
+      const { confirm_password, ...apiData } = formData;
       
-      console.log('Company info saved:', response.data);
+      const response = await axiosInstance.post('/v1/register-company', apiData);
+      
+      console.log('Company registration successful:', response.data);
   
       // Clear form data
       setFormData({
         name: '',
-        industry: '',
-        email_domain: '',
-        contact_email: '',
-        contact_number: '',
-        address: '',
+        first_name: '',
+        last_name: '',
+        email: '',
         password: '',
         confirm_password: '',
+        industry: '',
+        contact_number: '',
+        address: '',
+        country_id: ''
       });
       
-      // Display success message from the backend
       setSuccess({
         message: response.data.message || 'Registration successful! Welcome aboard!',
         companyId: response.data.company_id,
         adminUser: response.data.admin_user
       });
       
-      // Show success toast and wait for it to complete before redirecting
       showToast(response.data.message || 'Registration successful! Welcome aboard!', TOAST_TYPES.SUCCESS);
       
       // Redirect after 5 seconds
@@ -100,8 +118,8 @@ const AdminSignup = ({ switchView }) => {
       }, 5000);
 
     } catch (err) {
-      console.error('Error saving company info:', err);
-      const errorMessage = err.response?.data?.message || 'Failed to save company information. Please try again.';
+      console.error('Error during company registration:', err);
+      const errorMessage = err.response?.data?.message || 'Failed to register company. Please try again.';
       setError(errorMessage);
       showToast(errorMessage, TOAST_TYPES.ERROR);
     } finally {
@@ -114,7 +132,7 @@ const AdminSignup = ({ switchView }) => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#f2eefc] py-12 px-4 sm:px-6 lg:px-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#f2eefc] py-3 px-4 sm:px-6 lg:px-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
         <TimeChronosLogo />
         
@@ -132,17 +150,14 @@ const AdminSignup = ({ switchView }) => {
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
             <p className="font-semibold">{success.message}</p>
-            <p>Company ID: {success.companyId}</p>
-            <p>Admin Email: {success.adminUser?.email}</p>
+            {success.companyId && <p>Company ID: {success.companyId}</p>}
+            {success.adminUser?.email && <p>Admin Email: {success.adminUser?.email}</p>}
             <p className="mt-2 text-sm italic">Redirecting to login page in 5 seconds...</p>
           </div>
         )}
         
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Company Name <span className="text-red-500">*</span>
-            </label>
             <input
               type="text"
               id="name"
@@ -153,83 +168,59 @@ const AdminSignup = ({ switchView }) => {
               required
             />
           </div>
-          
+          <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="industry" className="block text-sm font-medium text-gray-700 mb-1">
-              Industry <span className="text-red-500">*</span>
-            </label>
             <input
               type="text"
-              id="industry"
-              value={formData.industry}
+              id="first_name"
+              value={formData.first_name}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5A367D]"
-              placeholder="Information Technology and Services"
+              placeholder="Your First Name"
               required
             />
           </div>
           
           <div>
-            <label htmlFor="email_domain" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Domain
-            </label>
             <input
               type="text"
-              id="email_domain"
-              value={formData.email_domain}
+              id="last_name"
+              value={formData.last_name}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5A367D]"
-              placeholder="yourcompany.com"
+              placeholder="Your Last Name"
+              required
             />
           </div>
-          
+          </div>
           <div>
-            <label htmlFor="contact_email" className="block text-sm font-medium text-gray-700 mb-1">
-              Contact Email <span className="text-red-500">*</span>
-            </label>
             <input
               type="email"
-              id="contact_email"
-              value={formData.contact_email}
+              id="email"
+              value={formData.email}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5A367D]"
-              placeholder="contact@yourcompany.com"
+              placeholder="your.email@company.com"
               required
             />
           </div>
           
           <div>
-            <label htmlFor="contact_number" className="block text-sm font-medium text-gray-700 mb-1">
-              Contact Number
-            </label>
-            <input
-              type="tel"
-              id="contact_number"
-              value={formData.contact_number}
+            <select
+              id="country_id"
+              value={formData.country_id}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5A367D]"
-              placeholder="+1-555-123-4567"
-            />
+              required
+            >
+              <option value="">Select Country</option>
+              {countries.map(country => (
+                <option key={country.id} value={country.id}>{country.name}</option>
+              ))}
+            </select>
           </div>
           
           <div>
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-              Address
-            </label>
-            <textarea
-              id="address"
-              value={formData.address}
-              onChange={handleChange}
-              rows="3"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5A367D]"
-              placeholder="123 Business Drive, City, State, Country"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password <span className="text-red-500">*</span>
-            </label>
             <input
               type="password"
               id="password"
@@ -242,9 +233,6 @@ const AdminSignup = ({ switchView }) => {
           </div>
 
           <div>
-            <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password <span className="text-red-500">*</span>
-            </label>
             <input
               type="password"
               id="confirm_password"
@@ -253,6 +241,39 @@ const AdminSignup = ({ switchView }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5A367D]"
               placeholder="Confirm your password"
               required
+            />
+          </div>
+          
+          <div>
+            <input
+              type="text"
+              id="industry"
+              value={formData.industry}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5A367D]"
+              placeholder="Information Technology and Services"
+            />
+          </div>
+          
+          <div>
+            <input
+              type="tel"
+              id="contact_number"
+              value={formData.contact_number}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5A367D]"
+              placeholder="+1-555-123-4567"
+            />
+          </div>
+          
+          <div>
+            <textarea
+              id="address"
+              value={formData.address}
+              onChange={handleChange}
+              rows="3"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5A367D]"
+              placeholder="123 Business Drive, City, State, Country"
             />
           </div>
           
@@ -279,5 +300,4 @@ const AdminSignup = ({ switchView }) => {
   );
 };
 
-
-export default AdminSignup;
+export default AdminSignup; 

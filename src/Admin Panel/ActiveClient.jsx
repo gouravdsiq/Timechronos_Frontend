@@ -1,129 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Users, ArrowLeft, Edit, Archive } from 'lucide-react'; // Changed Edit2 to Edit and added Archive
+import { Users, ArrowLeft, Edit, Archive } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Grid, GridColumn as Column } from '@progress/kendo-react-grid';
 import { process } from '@progress/kendo-data-query';
+import axios from 'axios'; // Import axios
 import '@progress/kendo-theme-default/dist/all.css';
-
-const ClientModal = ({ isOpen, onClose, onSubmit, initialData, modalTitle }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    code: '',
-    company_id: '',
-    description: '',
-  });
-
-  useEffect(() => {
-    if (isOpen) {
-      setFormData(initialData || {
-        name: '',
-        code: '',
-        company_id: '',
-        description: '',
-      });
-    }
-  }, [isOpen, initialData]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const { name, code, company_id, description } = formData;
-    if (!name || !code || !company_id || !description) {
-      alert('Please fill all fields.');
-      return;
-    }
-    onSubmit({
-      name,
-      code,
-      company_id: Number(company_id),
-      description,
-    });
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto">
-        <h3 className="text-xl font-semibold mb-4">{modalTitle}</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Client's full name"
-            />
-          </div>
-          <div>
-            <label htmlFor="code" className="block text-sm font-medium text-gray-700">Code</label>
-            <input
-              id="code"
-              name="code"
-              type="text"
-              value={formData.code}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Client code"
-            />
-          </div>
-          <div>
-            <label htmlFor="company_id" className="block text-sm font-medium text-gray-700">Company ID</label>
-            <input
-              id="company_id"
-              name="company_id"
-              type="number"
-              min="1"
-              value={formData.company_id}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Company ID"
-            />
-          </div>
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              required
-              rows={4}
-              className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Description"
-            />
-          </div>
-          <div className="flex justify-end space-x-2 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400 transition duration-200"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
-            >
-              {modalTitle.includes('Add') ? 'Add New Client' : 'Update Client'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
+import ClientModal from './ClientModal'; // Ensure you import your ClientModal component
+import { useSelector } from "react-redux";
 
 const ActiveClient = () => {
   const [clients, setClients] = useState([]);
@@ -143,6 +26,7 @@ const ActiveClient = () => {
     }
   });
 
+  const company_id = useSelector((state) => state.auth.company_id);
   const navigate = useNavigate();
 
   // Sample client data
@@ -217,24 +101,35 @@ const ActiveClient = () => {
 
   const handleAddClient = async (newClient) => {
     try {
-      // Create a new client with a generated ID
-      const createdClient = {
-        id: clients.length > 0 ? Math.max(...clients.map(c => c.id)) + 1 : 1,
-        ...newClient,
-        status: 'Active'
+      const clientData = {
+        company_id,
+        name: newClient.name,
+        email: newClient.email, // Ensure email is included in the modal
+        code: newClient.code,
+        description: newClient.description,
+        // country_id
       };
-      
+
+      // Make API call to add client
+      const response = await axios.post('/v1/addclients', clientData);
+      const createdClient = {
+        id: response.data.id, // Assuming the API returns the new client ID
+        ...clientData,
+        status: 'Active' // Assuming new clients are active
+      };
+
       setClients(prev => [...prev, createdClient]);
       alert('Client added successfully!');
       setIsAddModalOpen(false);
     } catch (error) {
-      alert('Add client failed: ' + error.message);
+      console.error('Error adding client:', error);
+      alert('Failed to add client. Please try again.');
     }
   };
 
   const handleEditClient = async (updatedClient) => {
     if (!clientToEdit) return;
-    
+
     try {
       // Update the client in the local state
       setClients(prev =>
@@ -305,13 +200,13 @@ const ActiveClient = () => {
 
   return (
     <div className="flex flex-col p-6 bg-gray-50 min-h-screen">
-       <button
-              onClick={() => navigate('/admin-dashboard')}
-              className="flex items-center mb-4 text-blue-600 hover:text-blue-800 transition duration-200"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2 transform transition-transform duration-200 hover:translate-x-1" />
-              <span>Back to Dashboard</span>
-            </button>
+      <button
+        onClick={() => navigate('/admin-dashboard')}
+        className="flex items-center mb-4 text-blue-600 hover:text-blue-800 transition duration-200"
+      >
+        <ArrowLeft className="w-5 h-5 mr-2 transform transition-transform duration-200 hover:translate-x-1" />
+        <span>Back to Dashboard</span>
+      </button>
 
       <h1 className="text-2xl font-bold mb-4">Client List</h1>
 
