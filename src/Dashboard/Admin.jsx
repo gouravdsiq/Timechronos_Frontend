@@ -39,9 +39,9 @@ const DashboardContent = ({ openRecentActivityModal, dateRange, setDateRange }) 
   ];
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: BarChart2 },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-    { id: 'performance', label: 'Performance', icon: PieChart },
+    { id: 'overview', label: 'Overview', icon: Calendar },
+    { id: 'analytics', label: 'Billability', icon: TrendingUp },
+    { id: 'performance', label: 'Resources', icon: PieChart },
     { id: 'compliance', label: 'Compliance', icon: CheckSquare },
     { id: 'insights', label: 'Insights', icon: FileText }
   ];
@@ -222,8 +222,8 @@ const DashboardContent = ({ openRecentActivityModal, dateRange, setDateRange }) 
   return (
     <div className="space-y-6">
       {/* Header with Date Range Picker and Tabs */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-white rounded-lg shadow-sm p-1">
+        <div className="flex items-center justify-between mb-2">
           <div>
             <h1 className="text-2xl font-semibold text-gray-800">Admin Analytics Dashboard</h1>
             <p className="text-gray-600 mt-1">Track performance, analyze trends, and get actionable insights</p>
@@ -348,7 +348,7 @@ const AdminDashboard = () => {
         />
 
         {/* Dynamic Main Content Area */}
-        <main className="flex-1 overflow-y-auto bg-[#fef4f3] p-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <main className="flex-1 overflow-y-auto bg-[#fef4f3] p-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           {/* If we're at the root admin dashboard path, show DashboardContent */}
           {location.pathname === '/admin-dashboard' ? (
             <DashboardContent 
